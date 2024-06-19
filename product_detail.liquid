@@ -1,0 +1,200 @@
+
+<style>
+    .review {
+        border-top: 1px solid #ccc;
+        padding: 1rem;
+        margin: 1rem 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .review .whata-review-content {
+        flex-grow: 1;
+    }
+
+    .review .author {
+        font-weight: bold;
+    }
+
+    .review .rating {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        font-weight: bold;
+    }
+
+    .whata-review-media img {
+        max-width: 300px;
+    }
+    
+    .whata-review-media video {
+        max-width: 150px;
+    }
+
+    .whata-star-filled {
+        background: url('https://embed-whatacart.sfo3.cdn.digitaloceanspaces.com/star.svg') center center no-repeat no-repeat;
+        width: 20px;
+        height: 20px;
+        background-size: 20px 20px;
+        display: inline-block !important;
+    }
+
+    .whata-star-container {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        align-items: 5px;
+    }
+
+    .whata-star-empty {
+        background: url('https://embed-whatacart.sfo3.cdn.digitaloceanspaces.com/star.svg');
+        width: 20px;
+        height: 20px;
+        background-size: 20px 20px;
+        filter: grayscale(100%);
+        display: inline-block !important;
+    }
+
+    .review .comment {
+        margin-top: 0.5rem;
+    }
+
+    #pagination-controls {
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    #pagination-controls button {
+        margin: 0 0.5rem;
+    }
+
+    .btn-whata-review {
+        border: 1px solid #000;
+        background: transparent;
+        padding: 5px;
+    }
+
+    .whata-star-filled {
+        background: url('https://embed-whatacart.sfo3.cdn.digitaloceanspaces.com/star.svg') center center no-repeat no-repeat;
+        width: 20px;
+        height: 20px;
+        background-size: 20px 20px;
+        display: inline-block !important;
+    }
+
+    .whata-star-container {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        align-items: 5px;
+    }
+
+    .whata-star-empty {
+        background: url('https://embed-whatacart.sfo3.cdn.digitaloceanspaces.com/star.svg');
+        width: 20px;
+        height: 20px;
+        background-size: 20px 20px;
+        filter: grayscale(100%);
+        display: inline-block !important;
+    }
+</style>
+<div id="reviews-widget" style="display: block"></div>
+<div id="pagination-controls"><button id="prev-page" class="btn-whata-review">&larr; Anterior</button><button
+        id="next-page" class="btn-whata-review">Siguiente &rarr;</button></div>
+<script>
+    window.WHATA_PLATFORM_ID = '<PLATFORM_ID>';
+    (function () {
+        function createReviewsWidget(containerId, apiUrl) {
+            const reviewsWidget = document.getElementById(containerId);
+            const prevButton = document.getElementById('prev-page');
+            const nextButton = document.getElementById('next-page');
+            let currentPage = 1;
+            const reviewsPerPage = 5;
+
+            async function fetchReviews(page) {
+                try {
+                    const response = await fetch(`${apiUrl}?page=${page}&limit=${reviewsPerPage}`);
+                    if (!response.ok) {
+                        console.error('Network response was not ok');
+                        return;
+                    }
+                    const data = await response.json();
+                    renderReviews(data.reviews);
+                    updatePaginationControls(data.total_reviews, page);
+                } catch (error) {
+                    console.error('Error fetching reviews:', error);
+                }
+            }
+
+            function renderReviews(reviews) {
+                reviewsWidget.innerHTML = '';
+                reviews.forEach(review => {
+                    const reviewElement = document.createElement('div');
+                    reviewElement.classList.add('review');
+
+                    const starContainer = document.createElement('div');
+
+                    for (let i = 1; i <= 5; i++) {
+                        const star = document.createElement('div');
+                        star.classList.add('whata-star-' + ((i <= review.rate) ? 'filled' : 'empty'));
+                        starContainer.appendChild(star);
+                    }
+                    const ratingContainer = document.createElement('div')
+                    ratingContainer.appendChild(starContainer)
+                    const createdAtContainer = document.createElement('span')
+                    createdAtContainer.innerHTML = `${review.created_at}`
+                    ratingContainer.appendChild(createdAtContainer)
+                    ratingContainer.classList.add('rating')
+                    const author = document.createElement('div')
+                    author.innerHTML = `${review.name} escribió:`
+                    author.classList.add('author')
+                    const comment = document.createElement('div')
+                    comment.innerText = review.comment
+                    comment.classList.add('comment')
+                    const reviewRating = document.createElement('div');
+                    reviewRating.appendChild(ratingContainer);
+                    reviewRating.appendChild(author);
+                    reviewRating.appendChild(comment);
+                    reviewRating.classList.add('whata-review-content')
+                    const reviewWrapper = document.createElement('div')
+                    reviewWrapper.appendChild(reviewRating);
+                    if (review.media) {
+                        const mediaContent = document.createElement('div');
+                        mediaContent.classList.add('whata-review-media');
+                        if (review.type == 'IMAGE') {
+                            mediaContent.innerHTML = `<img src=${review.media} />`;
+                        } else {
+                            mediaContent.innerHTML = `<video controls><source src="${review.media}" type="${review.content_type}" /></video>`;
+                        }
+                        reviewWrapper.appendChild(mediaContent);
+                    }
+                    reviewWrapper.classList.add('review');
+                    reviewsWidget.appendChild(reviewWrapper)
+                });
+            }
+
+            // Función para actualizar los controles de paginación
+            function updatePaginationControls(totalReviews, page) {
+                const totalPages = Math.ceil(totalReviews / reviewsPerPage);
+                prevButton.disabled = page === 1;
+                nextButton.disabled = page === totalPages;
+            }
+
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    fetchReviews(currentPage);
+                }
+            });
+
+            nextButton.addEventListener('click', () => {
+                currentPage++;
+                fetchReviews(currentPage);
+            });
+
+            fetchReviews(currentPage);
+        }
+
+        createReviewsWidget('reviews-widget', 'https://apiv2.whatacart.ai/v1/stores/' + window.WHATA_PLATFORM_ID + '/pub/reviews/{{  product.id }}/all');
+    })();
+</script>  
