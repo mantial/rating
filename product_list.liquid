@@ -1,0 +1,59 @@
+<style>
+    .whata-star-filled {
+        background: url('https://embed-whatacart.sfo3.cdn.digitaloceanspaces.com/star.svg') center center no-repeat no-repeat;
+        width: 20px;
+        height: 20px;
+        background-size: 20px 20px; 
+        display: inline-block !important;
+    }
+    .whata-star-container {display: flex; flex-direction: row; gap: 5px; align-items: center; }
+    .whata-star-empty {
+        background: url('https://embed-whatacart.sfo3.cdn.digitaloceanspaces.com/star.svg');
+        width: 20px;
+        height: 20px;
+        background-size: 20px 20px; 
+        filter: grayscale(100%);
+        display: inline-block !important;
+    }
+</style>
+<script>
+window.WHATA_PLATFORM_ID = '68725866805';
+(function () {
+
+    function createRatingWidget(containerId, apiUrl) {
+        const ratingWidget = document.getElementById(containerId);
+
+        async function fetchRating() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                renderStars(data.rating, data.count);
+            } catch (error) {
+                console.error('Error fetching rating:', error);
+            }
+        }
+
+        function renderStars(rating, rCount) {
+            ratingWidget.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement('div');
+                star.classList.add('whata-star-'+ ((i <= rating) ? 'filled' : 'empty'));
+                ratingWidget.appendChild(star);
+            }
+            const count = document.createElement('div');
+            count.style.display = 'inline-block';
+            count.innerHTML = `(${rCount})`;
+            ratingWidget.appendChild(count);
+        }
+
+        fetchRating();
+    }
+    const uid = `whata-star-${new Date().getTime()}`;
+
+    document.write(`<div id="${uid}" class="whata-star-container"></div>`);
+    createRatingWidget(uid, 'https://apiv2.whatacart.ai/v1/stores/' + window.WHATA_PLATFORM_ID + '/pub/reviews/{{  card_product.id }}');
+})();
+  </script>
