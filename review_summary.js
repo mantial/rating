@@ -1,4 +1,3 @@
-console.log('Script loaded');
   document.addEventListener('DOMContentLoaded', function() {
     // Function to create and insert the reviews summary
     function createReviewsSummary(data) {
