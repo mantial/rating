@@ -1,3 +1,4 @@
+<script>
   document.addEventListener('DOMContentLoaded', function() {
     // Function to create and insert the reviews summary
     function createReviewsSummary(data) {
@@ -280,3 +281,4 @@
       .then(data => createReviewsSummary(data))
       .catch(error => console.error('Error fetching reviews data:', error));
   });
+</script>
