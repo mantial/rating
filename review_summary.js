@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.appendChild(reviewsContainer);
   }
 
+  let currentPage = 1;
+  const itemsPerPage = 5;
+
   // Function to create and insert the reviews summary
   function createReviewsSummary(data) {
     // Create the main container
@@ -286,12 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Function to create and display individual reviews
-  function createIndividualReviews(data) {
-    if (!data || !data.reviews || !Array.isArray(data.reviews)) {
-      console.error('Invalid reviews data structure');
-      return;
-    }
-
+  function createIndividualReviews(reviews, paginationData) {
     const individualReviewsContainer = document.createElement('div');
     individualReviewsContainer.className = 'individual-reviews';
     individualReviewsContainer.style.cssText = `
@@ -303,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     `;
 
-    data.reviews.forEach(review => {
+    reviews.forEach(review => {
       const reviewElement = document.createElement('div');
       reviewElement.className = 'review';
       reviewElement.style.cssText = `
@@ -357,19 +355,66 @@ document.addEventListener('DOMContentLoaded', function() {
       individualReviewsContainer.appendChild(reviewElement);
     });
 
-    // Append individual reviews container to the main reviews container
-    reviewsContainer.appendChild(individualReviewsContainer);
+    // Create pagination controls
+    const paginationControls = document.createElement('div');
+    paginationControls.style.cssText = `
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 1rem;
+    `;
+
+    const prevButton = document.createElement('button');
+    prevButton.textContent = 'Previous';
+    prevButton.className = 'pagination-prev';
+    prevButton.disabled = paginationData.page === 1;
+    prevButton.addEventListener('click', () => fetchReviews(paginationData.page - 1));
+
+    const nextButton = document.createElement('button');
+    nextButton.textContent = 'Next';
+    nextButton.className = 'pagination-next';
+    nextButton.disabled = paginationData.page === paginationData.total_pages;
+    nextButton.addEventListener('click', () => fetchReviews(paginationData.page + 1));
+
+    const pageInfo = document.createElement('span');
+    pageInfo.className = 'pagination-info';
+    pageInfo.textContent = `Page ${paginationData.page} of ${paginationData.total_pages}`;
+    pageInfo.style.margin = '0 1rem';
+
+    paginationControls.appendChild(prevButton);
+    paginationControls.appendChild(pageInfo);
+    paginationControls.appendChild(nextButton);
+
+    individualReviewsContainer.appendChild(paginationControls);
+
+    // Append or update individual reviews container
+    const existingContainer = document.querySelector('.individual-reviews');
+    if (existingContainer) {
+      reviewsContainer.replaceChild(individualReviewsContainer, existingContainer);
+    } else {
+      reviewsContainer.appendChild(individualReviewsContainer);
+    }
+  }
+
+  function fetchReviews(page) {
+    currentPage = page;
+    fetch(`https://apiv2.whatacart.ai/v1/stores/65774551270/pub/reviews/8035422863590/all?page=${page}&per_page=${itemsPerPage}`)
+      .then(response => response.json())
+      .then(data => {
+        createIndividualReviews(data.reviews, {
+          page: data.page,
+          per_page: data.per_page,
+          total_pages: data.total_pages,
+          total_count: data.total_count
+        });
+      })
+      .catch(error => console.error('Error fetching reviews:', error));
   }
 
   // Fetch the summary data and create the reviews summary
   fetch('https://apiv2.whatacart.ai/v1/stores/65774551270/pub/reviews/8035422863590/summary')
     .then(response => response.json())
     .then(data => createReviewsSummary(data))
-    .then(() => {
-      // After summary is created, fetch and create individual reviews
-      return fetch('https://apiv2.whatacart.ai/v1/stores/65774551270/pub/reviews/8035422863590/all');
-    })
-    .then(response => response.json())
-    .then(data => createIndividualReviews(data))
+    .then(() => fetchReviews(1))
     .catch(error => console.error('Error fetching reviews:', error));
 });
