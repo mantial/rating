@@ -4,8 +4,12 @@ document.addEventListener('DOMContentLoaded', function() {
     reviewsContainer.style.cssText = `
         max-width: 1200px;
         margin: 2rem auto;
-        padding: 0 1rem;
-        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        padding: 0 2rem;
+        font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        color: #333;
+        background-color: #f8f9fa;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     `;
 
     const productSection = document.querySelector('.product-section, .product, #product-area, #shopify-section-product-template');
@@ -17,30 +21,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let currentPage = 1;
     const itemsPerPage = 5;
+    let currentSort = 'newest';
+    let currentRating = 'all';
 
-function createReviewsSummary(data) {
-    const container = document.createElement('div');
-    container.className = 'reviews-summary';
-    container.style.cssText = `
-        max-width: 100%;
-        margin-bottom: 2rem;
-        padding: 2rem;
-        background-color: #f8f9fa;
-        color: #333;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        position: relative;
-    `;
+    function createReviewsSummary(data) {
+        const container = document.createElement('div');
+        container.className = 'reviews-summary';
+        container.style.cssText = `
+            max-width: 100%;
+            margin-bottom: 3rem;
+            padding: 3rem;
+            background-color: #ffffff;
+            color: #333;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: relative;
+            transition: all 0.3s ease;
+        `;
 
-    // Add summary title
-    const summaryTitle = document.createElement('h2');
-    summaryTitle.textContent = 'Customer Reviews Summary';
-    summaryTitle.style.cssText = `
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-        color: #007bff;
-    `;
-    container.appendChild(summaryTitle);
+        const summaryTitle = document.createElement('h2');
+        summaryTitle.textContent = 'Customer Reviews Summary';
+        summaryTitle.style.cssText = `
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #1a73e8;
+        `;
+        container.appendChild(summaryTitle);
 
         const summaryText = document.createElement('p');
         summaryText.textContent = data.summary;
@@ -148,20 +155,20 @@ function createReviewsSummary(data) {
         ratingMediaSection.appendChild(mediaCarousel);
         container.appendChild(ratingMediaSection);
 
-    const poweredBy = document.createElement('div');
-    poweredBy.textContent = 'Powered by wappos';
-    poweredBy.style.cssText = `
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        font-size: 0.8rem;
-        color: #6c757d;
-    `;
-    container.appendChild(poweredBy);
+        const poweredBy = document.createElement('div');
+        poweredBy.textContent = 'Powered by wappos';
+        poweredBy.style.cssText = `
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            font-size: 0.8rem;
+            color: #6c757d;
+            font-weight: 500;
+        `;
+        container.appendChild(poweredBy);
 
-    reviewsContainer.appendChild(container);
+        reviewsContainer.appendChild(container);
 
-        // Create and insert the modal element
         const modal = document.createElement('div');
         modal.id = 'imageModal';
         modal.style.cssText = `
@@ -307,48 +314,118 @@ function createReviewsSummary(data) {
         });
     }
 
-    function createFilterControls(currentSort = 'newest', currentRating = 'all') {
-        const filterContainer = document.createElement('div');
-        filterContainer.className = 'filter-controls';
-        filterContainer.style.cssText = `
-      margin-bottom: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    `;
+  function createStarRating(rating) {
+        const starsContainer = document.createElement('div');
+        starsContainer.className = 'stars-container';
+        starsContainer.style.cssText = `
+            display: inline-flex;
+            align-items: center;
+        `;
 
-        // Sort by recency
-        const sortSelect = document.createElement('select');
-        sortSelect.id = 'sort-select';
-        sortSelect.innerHTML = `
-      <option value="newest" ${currentSort === 'newest' ? 'selected' : ''}>Newest First</option>
-      <option value="oldest" ${currentSort === 'oldest' ? 'selected' : ''}>Oldest First</option>
-    `;
+        for (let i = 1; i <= 5; i++) {
+            const star = document.createElement('span');
+            star.innerHTML = i <= rating ? '★' : '☆';
+            star.style.cssText = `
+                color: ${i <= rating ? '#ffc107' : '#e0e0e0'};
+                font-size: 1.2rem;
+                transition: color 0.2s ease;
+            `;
+            starsContainer.appendChild(star);
+        }
 
-        // Filter by star rating
-        const ratingSelect = document.createElement('select');
-        ratingSelect.id = 'rating-select';
-        ratingSelect.innerHTML = `
-      <option value="all" ${currentRating === 'all' ? 'selected' : ''}>All Ratings</option>
-      <option value="5" ${currentRating === '5' ? 'selected' : ''}>5 Stars</option>
-      <option value="4" ${currentRating === '4' ? 'selected' : ''}>4 Stars</option>
-      <option value="3" ${currentRating === '3' ? 'selected' : ''}>3 Stars</option>
-      <option value="2" ${currentRating === '2' ? 'selected' : ''}>2 Stars</option>
-      <option value="1" ${currentRating === '1' ? 'selected' : ''}>1 Star</option>
-    `;
-
-        filterContainer.appendChild(sortSelect);
-        filterContainer.appendChild(ratingSelect);
-
-        return filterContainer;
+        return starsContainer;
     }
 
-    // Function to create and display individual reviews
+    function createImageCarousel(images) {
+        const carouselContainer = document.createElement('div');
+        carouselContainer.className = 'image-carousel';
+        carouselContainer.style.cssText = `
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        `;
+
+        const imageContainer = document.createElement('div');
+        imageContainer.style.cssText = `
+            display: flex;
+            transition: transform 0.3s ease;
+        `;
+
+        images.forEach((url, index) => {
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = `Review image ${index + 1}`;
+            img.style.cssText = `
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                flex-shrink: 0;
+            `;
+            imageContainer.appendChild(img);
+        });
+
+        const prevButton = document.createElement('button');
+        prevButton.textContent = '❮';
+        prevButton.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 2;
+        `;
+
+        const nextButton = document.createElement('button');
+        nextButton.textContent = '❯';
+        nextButton.style.cssText = `
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 2;
+        `;
+
+        let currentIndex = 0;
+
+        prevButton.addEventListener('click', () => {
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : images.length - 1;
+            imageContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+        });
+
+        nextButton.addEventListener('click', () => {
+            currentIndex = (currentIndex < images.length - 1) ? currentIndex + 1 : 0;
+            imageContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+        });
+
+        carouselContainer.appendChild(imageContainer);
+        carouselContainer.appendChild(prevButton);
+        carouselContainer.appendChild(nextButton);
+
+        return carouselContainer;
+    }
+  
     function createFilterControls(currentSort = 'newest', currentRating = 'all') {
         const filterContainer = document.createElement('div');
         filterContainer.className = 'filter-controls';
         filterContainer.style.cssText = `
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
@@ -375,12 +452,13 @@ function createReviewsSummary(data) {
 
         [sortSelect, ratingSelect].forEach(select => {
             select.style.cssText = `
-                padding: 0.5rem;
-                border: 1px solid #ced4da;
-                border-radius: 4px;
+                padding: 0.75rem 1rem;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
                 background-color: #fff;
                 font-size: 1rem;
                 cursor: pointer;
+                transition: all 0.2s ease;
             `;
         });
 
@@ -390,39 +468,83 @@ function createReviewsSummary(data) {
         return filterContainer;
     }
 
-function createIndividualReviews(reviews, paginationData, currentSort, currentRating) {
-    const individualReviewsContainer = document.createElement('div');
-    individualReviewsContainer.className = 'individual-reviews';
-    individualReviewsContainer.style.cssText = `
-        margin-top: 2rem;
-        padding: 2rem;
-        background-color: #fff;
-        color: #333;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    `;
+    function createPaginationControls(paginationData) {
+        const paginationControls = document.createElement('div');
+        paginationControls.className = 'pagination-controls';
+        paginationControls.style.cssText = `
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+        `;
 
-    const filterControls = createFilterControls(currentSort, currentRating);
-    individualReviewsContainer.appendChild(filterControls);
+    const prevButton = document.createElement('button');
+    prevButton.textContent = 'Previous';
+    prevButton.className = 'pagination-btn';
+    prevButton.disabled = paginationData.page <= 1;
+    prevButton.addEventListener('click', () => fetchReviews(paginationData.page - 1));
 
-    const reviewsGrid = document.createElement('div');
-    reviewsGrid.style.cssText = `
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.5rem;
-        margin-top: 1.5rem;
-    `;
+    const nextButton = document.createElement('button');
+    nextButton.textContent = 'Next';
+    nextButton.className = 'pagination-btn';
+    nextButton.disabled = paginationData.page >= paginationData.total_pages;
+    nextButton.addEventListener('click', () => fetchReviews(paginationData.page + 1));
 
-    reviews.forEach(review => {
+        const pageInfo = document.createElement('span');
+        pageInfo.className = 'pagination-info';
+        pageInfo.textContent = `Page ${paginationData.page} of ${paginationData.total_pages}`;
+        pageInfo.style.margin = '0 1rem';
+
+        [prevButton, nextButton].forEach(button => {
+            button.style.cssText = `
+                padding: 0.5rem 1rem;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.2s ease;
+            `;
+            button.addEventListener('mouseover', () => {
+                if (!button.disabled) {
+                    button.style.backgroundColor = '#0056b3';
+                }
+            });
+            button.addEventListener('mouseout', () => {
+                if (!button.disabled) {
+                    button.style.backgroundColor = '#007bff';
+                }
+            });
+        });
+
+        paginationControls.appendChild(prevButton);
+        paginationControls.appendChild(pageInfo);
+        paginationControls.appendChild(nextButton);
+
+        return paginationControls;
+    }
+
+    function createReviewElement(review) {
         const reviewElement = document.createElement('div');
         reviewElement.className = 'review';
         reviewElement.style.cssText = `
             border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 1.5rem;
+            border-radius: 12px;
+            padding: 2rem;
             display: flex;
             flex-direction: column;
+            transition: all 0.3s ease;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         `;
+        reviewElement.addEventListener('mouseenter', () => {
+            reviewElement.style.transform = 'translateY(-5px)';
+            reviewElement.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)';
+        });
+        reviewElement.addEventListener('mouseleave', () => {
+            reviewElement.style.transform = 'translateY(0)';
+            reviewElement.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.05)';
+        });
 
         const reviewHeader = document.createElement('div');
         reviewHeader.style.cssText = `
@@ -442,25 +564,22 @@ function createIndividualReviews(reviews, paginationData, currentSort, currentRa
         nameElement.textContent = review.name;
         nameElement.style.fontSize = '1.1rem';
 
-        nameVerifiedContainer.appendChild(nameElement);
+    nameVerifiedContainer.appendChild(nameElement);
 
-        if (review.verified) {  // Add this condition if you have a 'verified' property
-            const verifiedBadge = document.createElement('span');
-            verifiedBadge.textContent = 'Verified';
-            verifiedBadge.style.cssText = `
-                background-color: #28a745;
-                color: white;
-                font-size: 0.7rem;
-                padding: 2px 5px;
-                border-radius: 3px;
-                margin-left: 0.5rem;
-            `;
-            nameVerifiedContainer.appendChild(verifiedBadge);
-        }
+    // Always show the verified badge
+    const verifiedBadge = document.createElement('span');
+    verifiedBadge.textContent = 'Verified';
+    verifiedBadge.style.cssText = `
+        background-color: #28a745;
+        color: white;
+        font-size: 0.7rem;
+        padding: 2px 5px;
+        border-radius: 3px;
+        margin-left: 0.5rem;
+    `;
+    nameVerifiedContainer.appendChild(verifiedBadge);
 
-        const ratingElement = document.createElement('span');
-        ratingElement.textContent = '★'.repeat(review.rate);
-        ratingElement.style.color = '#ffc107';
+        const ratingElement = createStarRating(review.rate);
 
         reviewHeader.appendChild(nameVerifiedContainer);
         reviewHeader.appendChild(ratingElement);
@@ -475,18 +594,9 @@ function createIndividualReviews(reviews, paginationData, currentSort, currentRa
         reviewElement.appendChild(reviewHeader);
         reviewElement.appendChild(commentElement);
 
-        if (review.media) {
-            const mediaElement = document.createElement('img');
-            mediaElement.src = review.media;
-            mediaElement.alt = 'Review media';
-            mediaElement.style.cssText = `
-                max-width: 100%;
-                height: auto;
-                object-fit: cover;
-                border-radius: 8px;
-                margin-bottom: 1rem;
-            `;
-            reviewElement.appendChild(mediaElement);
+        if (review.media && review.media.length > 0) {
+            const carousel = createImageCarousel(review.media);
+            reviewElement.appendChild(carousel);
         }
 
         const dateElement = document.createElement('small');
@@ -494,75 +604,82 @@ function createIndividualReviews(reviews, paginationData, currentSort, currentRa
         dateElement.style.color = '#6c757d';
         reviewElement.appendChild(dateElement);
 
-        reviewsGrid.appendChild(reviewElement);
-    });
-
-    individualReviewsContainer.appendChild(reviewsGrid);
-
-    // Create pagination controls
-    const paginationControls = document.createElement('div');
-    paginationControls.style.cssText = `
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 1rem;
-    `;
-
-        const prevButton = document.createElement('button');
-        prevButton.textContent = 'Previous';
-        prevButton.className = 'pagination-prev';
-        prevButton.disabled = paginationData.page === 1;
-        prevButton.addEventListener('click', () => fetchReviews(paginationData.page - 1));
-
-        const nextButton = document.createElement('button');
-        nextButton.textContent = 'Next';
-        nextButton.className = 'pagination-next';
-        nextButton.disabled = paginationData.page === paginationData.total_pages;
-        nextButton.addEventListener('click', () => fetchReviews(paginationData.page + 1));
-
-        const pageInfo = document.createElement('span');
-        pageInfo.className = 'pagination-info';
-        pageInfo.textContent = `Page ${paginationData.page} of ${paginationData.total_pages}`;
-        pageInfo.style.margin = '0 1rem';
-
-        paginationControls.appendChild(prevButton);
-        paginationControls.appendChild(pageInfo);
-        paginationControls.appendChild(nextButton);
-
-    individualReviewsContainer.appendChild(paginationControls);
-
-    // Append or update individual reviews container
-    const existingContainer = document.querySelector('.individual-reviews');
-    if (existingContainer) {
-        reviewsContainer.replaceChild(individualReviewsContainer, existingContainer);
-    } else {
-        reviewsContainer.appendChild(individualReviewsContainer);
+        return reviewElement;
     }
-    addFilterListeners();
-}
+
+    function createReviewsGrid(reviews) {
+        const reviewsGrid = document.createElement('div');
+        reviewsGrid.className = 'reviews-grid';
+        reviewsGrid.style.cssText = `
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        `;
+
+        reviews.forEach(review => {
+            const reviewElement = createReviewElement(review);
+            reviewsGrid.appendChild(reviewElement);
+        });
+
+        return reviewsGrid;
+    }
+
+    function createIndividualReviews(reviews, paginationData, currentSort, currentRating) {
+        const individualReviewsContainer = document.createElement('div');
+        individualReviewsContainer.className = 'individual-reviews';
+        individualReviewsContainer.style.cssText = `
+            margin-top: 3rem;
+            padding: 3rem;
+            background-color: #ffffff;
+            color: #333;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        `;
+
+        const filterControls = createFilterControls(currentSort, currentRating);
+        individualReviewsContainer.appendChild(filterControls);
+
+        const reviewsGrid = createReviewsGrid(reviews);
+        individualReviewsContainer.appendChild(reviewsGrid);
+
+        const paginationControls = createPaginationControls(paginationData);
+        individualReviewsContainer.appendChild(paginationControls);
+
+        const existingContainer = document.querySelector('.individual-reviews');
+        if (existingContainer) {
+            reviewsContainer.replaceChild(individualReviewsContainer, existingContainer);
+        } else {
+            reviewsContainer.appendChild(individualReviewsContainer);
+        }
+        addFilterListeners();
+    }
 
     function addFilterListeners() {
         const sortSelect = document.getElementById('sort-select');
         const ratingSelect = document.getElementById('rating-select');
 
         sortSelect.addEventListener('change', () => {
-            fetchReviews(1, sortSelect.value, ratingSelect.value);
+            fetchReviews(1, sortSelect.value, currentRating);
         });
 
         ratingSelect.addEventListener('change', () => {
-            fetchReviews(1, sortSelect.value, ratingSelect.value);
+            fetchReviews(1, currentSort, ratingSelect.value);
         });
     }
 
-    function fetchReviews(page, sort = 'newest', rating = 'all') {
-        currentPage = page;
-        const url = new URL(`https://apiv2.whatacart.ai/v1/stores/65774551270/pub/reviews/8035422863590/all`);
-        url.searchParams.append('page', page);
-        url.searchParams.append('per_page', itemsPerPage);
-        url.searchParams.append('sort', sort);
-        if (rating !== 'all') {
-            url.searchParams.append('rating', rating);
-        }
+function fetchReviews(page, sort = currentSort, rating = currentRating) {
+    currentPage = page;
+    currentSort = sort;
+    currentRating = rating;
+
+    const url = new URL(`https://apiv2.whatacart.ai/v1/stores/65774551270/pub/reviews/8035422863590/all`);
+    url.searchParams.append('page', page);
+    url.searchParams.append('per_page', itemsPerPage);
+    url.searchParams.append('order', sort === 'newest' ? 'desc' : 'asc'); // Change 'sort' to 'order'
+    if (rating !== 'all') {
+        url.searchParams.append('rating', rating);
+    }
 
         fetch(url)
             .then(response => response.json())
@@ -577,10 +694,33 @@ function createIndividualReviews(reviews, paginationData, currentSort, currentRa
             .catch(error => console.error('Error fetching reviews:', error));
     }
 
-    // Fetch the summary data and create the reviews summary
     fetch('https://apiv2.whatacart.ai/v1/stores/65774551270/pub/reviews/8035422863590/summary')
         .then(response => response.json())
         .then(data => createReviewsSummary(data))
         .then(() => fetchReviews(1, 'newest', 'all'))
         .catch(error => console.error('Error fetching reviews:', error));
-}); 
+
+    function addResponsiveStyles() {
+        const style = document.createElement('style');
+        style.textContent = `
+            @media (max-width: 768px) {
+                .reviews-container {
+                    padding: 0 1rem;
+                }
+                .reviews-summary, .individual-reviews {
+                    padding: 1.5rem;
+                }
+                .filter-controls {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+                .filter-controls select {
+                    width: 100%;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    addResponsiveStyles();
+});
