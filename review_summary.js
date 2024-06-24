@@ -18,18 +18,29 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
     const itemsPerPage = 5;
 
-    function createReviewsSummary(data) {
-        const container = document.createElement('div');
-        container.className = 'reviews-summary';
-        container.style.cssText = `
-            max-width: 100%;
-            margin-bottom: 2rem;
-            padding: 2rem;
-            background-color: #f8f9fa;
-            color: #333;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        `;
+function createReviewsSummary(data) {
+    const container = document.createElement('div');
+    container.className = 'reviews-summary';
+    container.style.cssText = `
+        max-width: 100%;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        color: #333;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: relative;
+    `;
+
+    // Add summary title
+    const summaryTitle = document.createElement('h2');
+    summaryTitle.textContent = 'Customer Reviews Summary';
+    summaryTitle.style.cssText = `
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #007bff;
+    `;
+    container.appendChild(summaryTitle);
 
         const summaryText = document.createElement('p');
         summaryText.textContent = data.summary;
@@ -137,7 +148,18 @@ document.addEventListener('DOMContentLoaded', function() {
         ratingMediaSection.appendChild(mediaCarousel);
         container.appendChild(ratingMediaSection);
 
-        reviewsContainer.appendChild(container);
+    const poweredBy = document.createElement('div');
+    poweredBy.textContent = 'Powered by wappos';
+    poweredBy.style.cssText = `
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        font-size: 0.8rem;
+        color: #6c757d;
+    `;
+    container.appendChild(poweredBy);
+
+    reviewsContainer.appendChild(container);
 
         // Create and insert the modal element
         const modal = document.createElement('div');
@@ -368,86 +390,123 @@ document.addEventListener('DOMContentLoaded', function() {
         return filterContainer;
     }
 
-    function createIndividualReviews(reviews, paginationData, currentSort, currentRating) {
-        const individualReviewsContainer = document.createElement('div');
-        individualReviewsContainer.className = 'individual-reviews';
-        individualReviewsContainer.style.cssText = `
-            margin-top: 2rem;
-            padding: 2rem;
-            background-color: #fff;
-            color: #333;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+function createIndividualReviews(reviews, paginationData, currentSort, currentRating) {
+    const individualReviewsContainer = document.createElement('div');
+    individualReviewsContainer.className = 'individual-reviews';
+    individualReviewsContainer.style.cssText = `
+        margin-top: 2rem;
+        padding: 2rem;
+        background-color: #fff;
+        color: #333;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    `;
+
+    const filterControls = createFilterControls(currentSort, currentRating);
+    individualReviewsContainer.appendChild(filterControls);
+
+    const reviewsGrid = document.createElement('div');
+    reviewsGrid.style.cssText = `
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    `;
+
+    reviews.forEach(review => {
+        const reviewElement = document.createElement('div');
+        reviewElement.className = 'review';
+        reviewElement.style.cssText = `
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
         `;
 
-        const filterControls = createFilterControls(currentSort, currentRating);
-        individualReviewsContainer.appendChild(filterControls);
+        const reviewHeader = document.createElement('div');
+        reviewHeader.style.cssText = `
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        `;
 
-        reviews.forEach(review => {
-            const reviewElement = document.createElement('div');
-            reviewElement.className = 'review';
-            reviewElement.style.cssText = `
-                border-bottom: 1px solid #e0e0e0;
-                padding: 1.5rem 0;
-                margin-bottom: 1.5rem;
+        const nameVerifiedContainer = document.createElement('div');
+        nameVerifiedContainer.style.cssText = `
+            display: flex;
+            align-items: center;
+        `;
+
+        const nameElement = document.createElement('strong');
+        nameElement.textContent = review.name;
+        nameElement.style.fontSize = '1.1rem';
+
+        nameVerifiedContainer.appendChild(nameElement);
+
+        if (review.verified) {  // Add this condition if you have a 'verified' property
+            const verifiedBadge = document.createElement('span');
+            verifiedBadge.textContent = 'Verified';
+            verifiedBadge.style.cssText = `
+                background-color: #28a745;
+                color: white;
+                font-size: 0.7rem;
+                padding: 2px 5px;
+                border-radius: 3px;
+                margin-left: 0.5rem;
             `;
+            nameVerifiedContainer.appendChild(verifiedBadge);
+        }
 
-            const reviewHeader = document.createElement('div');
-            reviewHeader.style.cssText = `
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
+        const ratingElement = document.createElement('span');
+        ratingElement.textContent = '★'.repeat(review.rate);
+        ratingElement.style.color = '#ffc107';
+
+        reviewHeader.appendChild(nameVerifiedContainer);
+        reviewHeader.appendChild(ratingElement);
+
+        const commentElement = document.createElement('p');
+        commentElement.textContent = review.comment || '';
+        commentElement.style.cssText = `
+            flex-grow: 1;
+            margin-bottom: 1rem;
+        `;
+
+        reviewElement.appendChild(reviewHeader);
+        reviewElement.appendChild(commentElement);
+
+        if (review.media) {
+            const mediaElement = document.createElement('img');
+            mediaElement.src = review.media;
+            mediaElement.alt = 'Review media';
+            mediaElement.style.cssText = `
+                max-width: 100%;
+                height: auto;
+                object-fit: cover;
+                border-radius: 8px;
                 margin-bottom: 1rem;
             `;
+            reviewElement.appendChild(mediaElement);
+        }
 
-            const nameElement = document.createElement('strong');
-            nameElement.textContent = review.name;
-            nameElement.style.fontSize = '1.1rem';
+        const dateElement = document.createElement('small');
+        dateElement.textContent = review.created_at;
+        dateElement.style.color = '#6c757d';
+        reviewElement.appendChild(dateElement);
 
-            const ratingElement = document.createElement('span');
-            ratingElement.textContent = '★'.repeat(review.rate);
-            ratingElement.style.color = '#ffc107';
+        reviewsGrid.appendChild(reviewElement);
+    });
 
-            reviewHeader.appendChild(nameElement);
-            reviewHeader.appendChild(ratingElement);
+    individualReviewsContainer.appendChild(reviewsGrid);
 
-            const commentElement = document.createElement('p');
-            commentElement.textContent = review.comment || '';
-            commentElement.style.marginBottom = '1rem';
-
-            reviewElement.appendChild(reviewHeader);
-            reviewElement.appendChild(commentElement);
-
-            if (review.media) {
-                const mediaElement = document.createElement('img');
-                mediaElement.src = review.media;
-                mediaElement.alt = 'Review media';
-                mediaElement.style.cssText = `
-                    max-width: 200px;
-                    max-height: 200px;
-                    object-fit: cover;
-                    border-radius: 8px;
-                    margin-bottom: 1rem;
-                `;
-                reviewElement.appendChild(mediaElement);
-            }
-
-            const dateElement = document.createElement('small');
-            dateElement.textContent = review.created_at;
-            dateElement.style.color = '#6c757d';
-            reviewElement.appendChild(dateElement);
-
-            individualReviewsContainer.appendChild(reviewElement);
-        });
-
-        // Create pagination controls
-        const paginationControls = document.createElement('div');
-        paginationControls.style.cssText = `
+    // Create pagination controls
+    const paginationControls = document.createElement('div');
+    paginationControls.style.cssText = `
         display: flex;
         justify-content: center;
         align-items: center;
         margin-top: 1rem;
-      `;
+    `;
 
         const prevButton = document.createElement('button');
         prevButton.textContent = 'Previous';
@@ -470,17 +529,17 @@ document.addEventListener('DOMContentLoaded', function() {
         paginationControls.appendChild(pageInfo);
         paginationControls.appendChild(nextButton);
 
-        individualReviewsContainer.appendChild(paginationControls);
+    individualReviewsContainer.appendChild(paginationControls);
 
-        // Append or update individual reviews container
-        const existingContainer = document.querySelector('.individual-reviews');
-        if (existingContainer) {
-            reviewsContainer.replaceChild(individualReviewsContainer, existingContainer);
-        } else {
-            reviewsContainer.appendChild(individualReviewsContainer);
-        }
-        addFilterListeners();
+    // Append or update individual reviews container
+    const existingContainer = document.querySelector('.individual-reviews');
+    if (existingContainer) {
+        reviewsContainer.replaceChild(individualReviewsContainer, existingContainer);
+    } else {
+        reviewsContainer.appendChild(individualReviewsContainer);
     }
+    addFilterListeners();
+}
 
     function addFilterListeners() {
         const sortSelect = document.getElementById('sort-select');
@@ -524,4 +583,4 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => createReviewsSummary(data))
         .then(() => fetchReviews(1, 'newest', 'all'))
         .catch(error => console.error('Error fetching reviews:', error));
-});
+}); 
