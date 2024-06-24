@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     let currentPage = 1;
-    const itemsPerPage = 5;
+    const itemsPerPage = 6;
     let currentSort = 'newest';
     let currentRating = 'all';
 
@@ -524,88 +524,89 @@ document.addEventListener('DOMContentLoaded', function() {
         return paginationControls;
     }
 
-    function createReviewElement(review) {
-        const reviewElement = document.createElement('div');
-        reviewElement.className = 'review';
-        reviewElement.style.cssText = `
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-            background-color: #fff;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        `;
-        reviewElement.addEventListener('mouseenter', () => {
-            reviewElement.style.transform = 'translateY(-5px)';
-            reviewElement.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)';
-        });
-        reviewElement.addEventListener('mouseleave', () => {
-            reviewElement.style.transform = 'translateY(0)';
-            reviewElement.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.05)';
-        });
+ function createReviewElement(review) {
+    const reviewElement = document.createElement('div');
+    reviewElement.className = 'review';
+    reviewElement.style.cssText = `
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease;
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    `;
+    reviewElement.addEventListener('mouseenter', () => {
+        reviewElement.style.transform = 'translateY(-5px)';
+        reviewElement.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)';
+    });
+    reviewElement.addEventListener('mouseleave', () => {
+        reviewElement.style.transform = 'translateY(0)';
+        reviewElement.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.05)';
+    });
 
-        const reviewHeader = document.createElement('div');
-        reviewHeader.style.cssText = `
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        `;
+    const reviewHeader = document.createElement('div');
+    reviewHeader.style.cssText = `
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    `;
 
-        const nameVerifiedContainer = document.createElement('div');
-        nameVerifiedContainer.style.cssText = `
-            display: flex;
-            align-items: center;
-        `;
+    const nameVerifiedContainer = document.createElement('div');
+    nameVerifiedContainer.style.cssText = `
+        display: flex;
+        align-items: center;
+    `;
 
-        const nameElement = document.createElement('strong');
-        nameElement.textContent = review.name;
-        nameElement.style.fontSize = '1.1rem';
-
+    const nameElement = document.createElement('strong');
+    nameElement.textContent = review.name;
+    nameElement.style.fontSize = '1.1rem';
     nameVerifiedContainer.appendChild(nameElement);
 
-    // Always show the verified badge
     const verifiedBadge = document.createElement('span');
-    verifiedBadge.textContent = 'Verified';
+    verifiedBadge.textContent = 'Verificado por Wappos';
     verifiedBadge.style.cssText = `
         background-color: #28a745;
         color: white;
-        font-size: 0.7rem;
+        font-size: 1rem;
         padding: 2px 5px;
         border-radius: 3px;
         margin-left: 0.5rem;
     `;
     nameVerifiedContainer.appendChild(verifiedBadge);
 
-        const ratingElement = createStarRating(review.rate);
+    const ratingElement = createStarRating(review.rate);
 
-        reviewHeader.appendChild(nameVerifiedContainer);
-        reviewHeader.appendChild(ratingElement);
+    reviewHeader.appendChild(nameVerifiedContainer);
+    reviewHeader.appendChild(ratingElement);
+    reviewElement.appendChild(reviewHeader);
 
-        const commentElement = document.createElement('p');
-        commentElement.textContent = review.comment || '';
-        commentElement.style.cssText = `
-            flex-grow: 1;
-            margin-bottom: 1rem;
-        `;
+    const commentElement = document.createElement('p');
+    commentElement.textContent = review.comment || '';
+    commentElement.style.cssText = `
+        flex-grow: 1;
+        margin-bottom: 1rem;
+    `;
+    reviewElement.appendChild(commentElement);
 
-        reviewElement.appendChild(reviewHeader);
-        reviewElement.appendChild(commentElement);
-
-        if (review.media && review.media.length > 0) {
-            const carousel = createImageCarousel(review.media);
+    if (review.media) {
+        const mediaArray = typeof review.media === 'string' ? [review.media] : review.media;
+        if (mediaArray.length > 0) {
+            const carousel = createImageCarousel(mediaArray);
             reviewElement.appendChild(carousel);
         }
-
-        const dateElement = document.createElement('small');
-        dateElement.textContent = review.created_at;
-        dateElement.style.color = '#6c757d';
-        reviewElement.appendChild(dateElement);
-
-        return reviewElement;
     }
+
+    const dateElement = document.createElement('small');
+    dateElement.textContent = review.created_at;
+    dateElement.style.color = '#6c757d';
+    reviewElement.appendChild(dateElement);
+
+    return reviewElement;
+}
+
 
     function createReviewsGrid(reviews) {
         const reviewsGrid = document.createElement('div');
@@ -625,48 +626,56 @@ document.addEventListener('DOMContentLoaded', function() {
         return reviewsGrid;
     }
 
-    function createIndividualReviews(reviews, paginationData, currentSort, currentRating) {
-        const individualReviewsContainer = document.createElement('div');
-        individualReviewsContainer.className = 'individual-reviews';
-        individualReviewsContainer.style.cssText = `
-            margin-top: 3rem;
-            padding: 3rem;
-            background-color: #ffffff;
-            color: #333;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        `;
+function createIndividualReviews(reviews, paginationData, currentSort, currentRating) {
+    console.log("Updating reviews with new data", reviews);
 
-        const filterControls = createFilterControls(currentSort, currentRating);
-        individualReviewsContainer.appendChild(filterControls);
+    const individualReviewsContainer = document.createElement('div');
+    individualReviewsContainer.className = 'individual-reviews';
+    individualReviewsContainer.style.cssText = `
+        margin-top: 3rem;
+        padding: 3rem;
+        background-color: #ffffff;
+        color: #333;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    `;
 
-        const reviewsGrid = createReviewsGrid(reviews);
-        individualReviewsContainer.appendChild(reviewsGrid);
+    const filterControls = createFilterControls(currentSort, currentRating);
+    individualReviewsContainer.appendChild(filterControls);
 
-        const paginationControls = createPaginationControls(paginationData);
-        individualReviewsContainer.appendChild(paginationControls);
+    const reviewsGrid = createReviewsGrid(reviews);
+    individualReviewsContainer.appendChild(reviewsGrid);
 
-        const existingContainer = document.querySelector('.individual-reviews');
-        if (existingContainer) {
-            reviewsContainer.replaceChild(individualReviewsContainer, existingContainer);
-        } else {
-            reviewsContainer.appendChild(individualReviewsContainer);
-        }
-        addFilterListeners();
+    const paginationControls = createPaginationControls(paginationData);
+    individualReviewsContainer.appendChild(paginationControls);
+
+    const existingContainer = document.querySelector('.individual-reviews');
+    if (existingContainer) {
+        console.log("Replacing existing reviews container");
+        reviewsContainer.replaceChild(individualReviewsContainer, existingContainer);
+    } else {
+        console.log("Appending new reviews container");
+        reviewsContainer.appendChild(individualReviewsContainer);
     }
+    addFilterListeners(); // Ensure listeners are re-added if needed
+}
 
-    function addFilterListeners() {
-        const sortSelect = document.getElementById('sort-select');
-        const ratingSelect = document.getElementById('rating-select');
 
-        sortSelect.addEventListener('change', () => {
-            fetchReviews(1, sortSelect.value, currentRating);
-        });
+function addFilterListeners() {
+    const sortSelect = document.getElementById('sort-select');
+    const ratingSelect = document.getElementById('rating-select');
 
-        ratingSelect.addEventListener('change', () => {
-            fetchReviews(1, currentSort, ratingSelect.value);
-        });
-    }
+    sortSelect.addEventListener('change', () => {
+        currentSort = sortSelect.value; // Update currentSort globally
+        fetchReviews(1, sortSelect.value, currentRating);
+    });
+
+    ratingSelect.addEventListener('change', () => {
+        currentRating = ratingSelect.value; // Update currentRating globally
+        fetchReviews(1, currentSort, ratingSelect.value);
+    });
+}
+
 
 function fetchReviews(page, sort = currentSort, rating = currentRating) {
     currentPage = page;
@@ -676,7 +685,7 @@ function fetchReviews(page, sort = currentSort, rating = currentRating) {
     const url = new URL(`https://apiv2.whatacart.ai/v1/stores/65774551270/pub/reviews/8035422863590/all`);
     url.searchParams.append('page', page);
     url.searchParams.append('per_page', itemsPerPage);
-    url.searchParams.append('order', sort === 'newest' ? 'desc' : 'asc'); // Change 'sort' to 'order'
+    url.searchParams.append('sort', sort === 'newest' ? 'newest' : 'oldest'); // Change 'sort' to 'order'
     if (rating !== 'all') {
         url.searchParams.append('rating', rating);
     }
