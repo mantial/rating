@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Create a container for both summary and individual reviews
     const reviewsContainer = document.createElement('div');
     reviewsContainer.className = 'reviews-container';
     reviewsContainer.style.cssText = `
-      max-width: 1200px;
-      margin: 2rem auto;
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     `;
 
-    // Insert the container into the page
     const productSection = document.querySelector('.product-section, .product, #product-area, #shopify-section-product-template');
     if (productSection) {
         productSection.appendChild(reviewsContainer);
@@ -18,74 +18,71 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
     const itemsPerPage = 5;
 
-    // Function to create and insert the reviews summary
     function createReviewsSummary(data) {
-        // Create the main container
         const container = document.createElement('div');
         container.className = 'reviews-summary';
         container.style.cssText = `
-        font-family: var(--font-body-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif);
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 1rem;
-        background-color: var(--color-background, #ffffff);
-        color: var(--color-text, #333333);
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      `;
+            max-width: 100%;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background-color: #f8f9fa;
+            color: #333;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        `;
 
-        // Add the summary text
         const summaryText = document.createElement('p');
         summaryText.textContent = data.summary;
         summaryText.style.cssText = `
-        font-size: 1rem;
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
-      `;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        `;
         container.appendChild(summaryText);
 
-        // Create the rating and media section
         const ratingMediaSection = document.createElement('div');
         ratingMediaSection.style.cssText = `
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 2rem;
-      `;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        `;
 
-        // Add the rating information
         const ratingInfo = document.createElement('div');
         ratingInfo.style.cssText = `
-        flex: 1;
-        min-width: 250px;
-      `;
+            flex: 1;
+            min-width: 250px;
+        `;
 
         const averageRating = document.createElement('h3');
-        averageRating.textContent = `Calificación promedio: ${data.average_rating.toFixed(2)}`;
+        averageRating.textContent = `Average Rating: ${data.average_rating.toFixed(2)}`;
         averageRating.style.cssText = `
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-      `;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #007bff;
+        `;
         ratingInfo.appendChild(averageRating);
 
         const ratingBreakdown = document.createElement('ul');
         ratingBreakdown.style.cssText = `
-        list-style: none;
-        padding: 0;
-      `;
+            list-style: none;
+            padding: 0;
+        `;
 
         for (let i = 5; i >= 1; i--) {
             const li = document.createElement('li');
             li.style.cssText = `
-          display: flex;
-          align-items: center;
-          margin-bottom: 0.5rem;
-        `;
+                display: flex;
+                align-items: center;
+                margin-bottom: 0.5rem;
+            `;
 
             const stars = document.createElement('span');
-            stars.innerHTML = `${i} ` + '⭐'.repeat(i);
-            stars.style.marginRight = '0.5rem';
+            stars.innerHTML = `${i} ` + '★'.repeat(i);
+            stars.style.cssText = `
+                margin-right: 0.5rem;
+                color: #ffc107;
+                font-size: 1.2rem;
+            `;
 
             const count = document.createElement('span');
             count.textContent = data.rating_count[i];
@@ -98,22 +95,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         ratingInfo.appendChild(ratingBreakdown);
 
-        // Add the media carousel
         const mediaCarousel = document.createElement('div');
         mediaCarousel.style.cssText = `
-        flex: 2;
-        min-width: 300px;
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-      `;
-        mediaCarousel.style.cssText += `
-        &::-webkit-scrollbar {
-          display: none;
-        }
-      `;
+            flex: 2;
+            min-width: 300px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #007bff #f0f0f0;
+        `;
 
         data.media_carrousel.forEach((url, index) => {
             const img = document.createElement('img');
@@ -121,16 +112,23 @@ document.addEventListener('DOMContentLoaded', function() {
             img.alt = 'Review image';
             img.dataset.index = index;
             img.style.cssText = `
-          width: 150px;
-          height: 150px;
-          object-fit: cover;
-          margin-right: 1rem;
-          border-radius: 8px;
-          display: inline-block;
-          cursor: pointer;
-        `;
+                width: 150px;
+                height: 150px;
+                object-fit: cover;
+                margin-right: 1rem;
+                border-radius: 8px;
+                display: inline-block;
+                cursor: pointer;
+                transition: transform 0.3s ease;
+            `;
             img.addEventListener('click', function() {
                 openModal(index);
+            });
+            img.addEventListener('mouseover', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            img.addEventListener('mouseout', function() {
+                this.style.transform = 'scale(1)';
             });
             mediaCarousel.appendChild(img);
         });
@@ -139,7 +137,6 @@ document.addEventListener('DOMContentLoaded', function() {
         ratingMediaSection.appendChild(mediaCarousel);
         container.appendChild(ratingMediaSection);
 
-        // Append the summary container to the main reviews container
         reviewsContainer.appendChild(container);
 
         // Create and insert the modal element
@@ -325,19 +322,64 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Function to create and display individual reviews
+    function createFilterControls(currentSort = 'newest', currentRating = 'all') {
+        const filterContainer = document.createElement('div');
+        filterContainer.className = 'filter-controls';
+        filterContainer.style.cssText = `
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        `;
+
+        const sortSelect = document.createElement('select');
+        sortSelect.id = 'sort-select';
+        sortSelect.innerHTML = `
+            <option value="newest" ${currentSort === 'newest' ? 'selected' : ''}>Newest First</option>
+            <option value="oldest" ${currentSort === 'oldest' ? 'selected' : ''}>Oldest First</option>
+        `;
+
+        const ratingSelect = document.createElement('select');
+        ratingSelect.id = 'rating-select';
+        ratingSelect.innerHTML = `
+            <option value="all" ${currentRating === 'all' ? 'selected' : ''}>All Ratings</option>
+            <option value="5" ${currentRating === '5' ? 'selected' : ''}>5 Stars</option>
+            <option value="4" ${currentRating === '4' ? 'selected' : ''}>4 Stars</option>
+            <option value="3" ${currentRating === '3' ? 'selected' : ''}>3 Stars</option>
+            <option value="2" ${currentRating === '2' ? 'selected' : ''}>2 Stars</option>
+            <option value="1" ${currentRating === '1' ? 'selected' : ''}>1 Star</option>
+        `;
+
+        [sortSelect, ratingSelect].forEach(select => {
+            select.style.cssText = `
+                padding: 0.5rem;
+                border: 1px solid #ced4da;
+                border-radius: 4px;
+                background-color: #fff;
+                font-size: 1rem;
+                cursor: pointer;
+            `;
+        });
+
+        filterContainer.appendChild(sortSelect);
+        filterContainer.appendChild(ratingSelect);
+
+        return filterContainer;
+    }
+
     function createIndividualReviews(reviews, paginationData, currentSort, currentRating) {
         const individualReviewsContainer = document.createElement('div');
         individualReviewsContainer.className = 'individual-reviews';
         individualReviewsContainer.style.cssText = `
-      margin-top: 2rem;
-      padding: 1rem;
-      background-color: var(--color-background, #ffffff);
-      color: var(--color-text, #333333);
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    `;
+            margin-top: 2rem;
+            padding: 2rem;
+            background-color: #fff;
+            color: #333;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        `;
 
-        // Create and append the filter controls with current values
         const filterControls = createFilterControls(currentSort, currentRating);
         individualReviewsContainer.appendChild(filterControls);
 
@@ -345,31 +387,33 @@ document.addEventListener('DOMContentLoaded', function() {
             const reviewElement = document.createElement('div');
             reviewElement.className = 'review';
             reviewElement.style.cssText = `
-          border-bottom: 1px solid #e0e0e0;
-          padding: 1rem 0;
-          margin-bottom: 1rem;
-        `;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 1.5rem 0;
+                margin-bottom: 1.5rem;
+            `;
 
             const reviewHeader = document.createElement('div');
             reviewHeader.style.cssText = `
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.5rem;
-        `;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1rem;
+            `;
 
             const nameElement = document.createElement('strong');
             nameElement.textContent = review.name;
+            nameElement.style.fontSize = '1.1rem';
 
             const ratingElement = document.createElement('span');
-            ratingElement.textContent = '⭐'.repeat(review.rate);
+            ratingElement.textContent = '★'.repeat(review.rate);
+            ratingElement.style.color = '#ffc107';
 
             reviewHeader.appendChild(nameElement);
             reviewHeader.appendChild(ratingElement);
 
             const commentElement = document.createElement('p');
             commentElement.textContent = review.comment || '';
-            commentElement.style.marginBottom = '0.5rem';
+            commentElement.style.marginBottom = '1rem';
 
             reviewElement.appendChild(reviewHeader);
             reviewElement.appendChild(commentElement);
@@ -379,17 +423,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 mediaElement.src = review.media;
                 mediaElement.alt = 'Review media';
                 mediaElement.style.cssText = `
-            max-width: 200px;
-            max-height: 200px;
-            object-fit: cover;
-            border-radius: 4px;
-          `;
+                    max-width: 200px;
+                    max-height: 200px;
+                    object-fit: cover;
+                    border-radius: 8px;
+                    margin-bottom: 1rem;
+                `;
                 reviewElement.appendChild(mediaElement);
             }
 
             const dateElement = document.createElement('small');
             dateElement.textContent = review.created_at;
-            dateElement.style.color = '#666';
+            dateElement.style.color = '#6c757d';
             reviewElement.appendChild(dateElement);
 
             individualReviewsContainer.appendChild(reviewElement);
