@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
         container.className = 'reviews-summary';
         container.style.cssText = `
             max-width: 100%;
+            margin-top: 2rem;
             margin-bottom: 3rem;
             padding: 3rem;
             background-color: #ffffff;
@@ -638,6 +639,7 @@ function createIndividualReviews(reviews, paginationData, currentSort, currentRa
         color: #333;
         border-radius: 16px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
     `;
 
     const filterControls = createFilterControls(currentSort, currentRating);
