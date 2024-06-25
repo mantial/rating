@@ -1,4 +1,4 @@
-
+<style>
 .whata-star {
     position: relative;
     display: inline-block;
@@ -20,6 +20,7 @@
     top: 0;
     left: 0;
 }
+</style>
 (function () {
     function createRatingWidget(productId, apiUrl) {
         const productCard = document.querySelector(`[data-product-id="${productId}"]`);
