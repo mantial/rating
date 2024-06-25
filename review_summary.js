@@ -734,8 +734,17 @@ function fetchReviews(page, sort = currentSort, rating = currentRating) {
             })
             .catch(error => console.error('Error fetching reviews:', error));
     }
+    var productInfo = document.getElementById("product-info");
+    var productId = productInfo.dataset.productId;
+    
+    if (productId) {
+        console.log('Product id is', productId);
+    } else {
+        productId = product.id;
+    }
 
-    fetch(`https://apiv2.whatacart.ai/v1/stores/${window.WHATACART_PLATFORM_ID}/pub/reviews/${product.id}/summary`)
+
+    fetch(`https://apiv2.whatacart.ai/v1/stores/${window.WHATACART_PLATFORM_ID}/pub/reviews/${productId}/summary`)
         .then(response => response.json())
         .then(data => createReviewsSummary(data))
         .then(() => fetchReviews(1, 'newest', 'all'))
