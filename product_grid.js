@@ -1,26 +1,4 @@
-<style>
-.whata-star {
-    position: relative;
-    display: inline-block;
-    font-size: 20px; /* Adjust as needed */
-    line-height: 1;
-}
 
-.whata-star-filled {
-    color: gold; /* Or any color you prefer for filled stars */
-}
-
-.whata-star-empty {
-    color: #ccc; /* Or any color you prefer for empty stars */
-}
-
-.whata-star-partial {
-    color: gold; /* Same as filled star color */
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-</style>
 (function () {
     function createRatingWidget(productId, apiUrl) {
         const productCard = document.querySelector(`[data-product-id="${productId}"]`);
