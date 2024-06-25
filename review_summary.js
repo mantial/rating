@@ -630,23 +630,23 @@ commentElement.style.cssText = `
 }
 
 
-    function createReviewsGrid(reviews) {
-        const reviewsGrid = document.createElement('div');
-        reviewsGrid.className = 'reviews-grid';
-        reviewsGrid.style.cssText = `
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        `;
+function createReviewsGrid(reviews) {
+    const reviewsGrid = document.createElement('div');
+    reviewsGrid.className = 'reviews-grid';
+    reviewsGrid.style.cssText = `
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    `;
 
-        reviews.forEach(review => {
-            const reviewElement = createReviewElement(review);
-            reviewsGrid.appendChild(reviewElement);
-        });
+    reviews.forEach(review => {
+        const reviewElement = createReviewElement(review);
+        reviewsGrid.appendChild(reviewElement);
+    });
 
-        return reviewsGrid;
-    }
+    return reviewsGrid;
+}
 
 function createIndividualReviews(reviews, paginationData, currentSort, currentRating) {
     console.log("Updating reviews with new data", reviews);
@@ -737,25 +737,64 @@ function addResponsiveStyles() {
     style.textContent = `
         @media (max-width: 768px) {
             .reviews-container {
-                padding: 0 1rem;
+                padding: 0 1rem !important;
+                margin: 0 auto !important;
+                max-width: 100% !important;
             }
             .reviews-summary, .individual-reviews {
-                padding: 1.5rem;
+                padding: 1.5rem !important;
+                box-sizing: border-box !important;
+            }
+            .reviews-summary .ratingMediaSection {
+                flex-direction: column !important;
+                align-items: center !important;
+            }
+            .reviews-summary .ratingInfo,
+            .reviews-summary .mediaCarousel {
+                flex: 1 1 100% !important;
+                min-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .reviews-summary .mediaCarousel {
+                margin-top: 1rem !important;
+                overflow-x: auto !important;
+                display: flex !important;
+                justify-content: center !important;
+            }
+            .reviews-summary .mediaCarousel img {
+                width: 100px !important;
+                height: 100px !important;
+                margin: 0.5rem !important;
             }
             .reviews-grid {
-                grid-template-columns: 1fr;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 1rem !important;
             }
             .filter-controls {
-                flex-direction: column;
-                align-items: stretch;
+                flex-direction: column !important;
+                align-items: stretch !important;
             }
             .filter-controls select {
-                width: 100%;
-                margin-bottom: 1rem;
+                width: 100% !important;
+                margin-bottom: 0.5rem !important;
+            }
+            .review {
+                padding: 1.5rem !important;
+                box-sizing: border-box !important;
+            }
+            .pagination-controls {
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+            }
+            .pagination-controls button {
+                margin: 0.25rem !important;
             }
         }
     `;
     document.head.appendChild(style);
 }
-    addResponsiveStyles();
-});
+
+addResponsiveStyles();
+
+  });
