@@ -59,20 +59,18 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         container.appendChild(summaryText);
 
-const ratingMediaSection = document.createElement('div');
-ratingMediaSection.className = 'ratingMediaSection';
-ratingMediaSection.style.cssText = `
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-`;
+        const ratingMediaSection = document.createElement('div');
+        ratingMediaSection.style.cssText = `
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        `;
 
-    const ratingInfo = document.createElement('div');
-    ratingInfo.className = 'ratingInfo';
-    ratingInfo.style.cssText = `
-        flex: 1;
-        min-width: 250px;
-    `;
+        const ratingInfo = document.createElement('div');
+        ratingInfo.style.cssText = `
+            flex: 1;
+            min-width: 250px;
+        `;
 
         const averageRating = document.createElement('h3');
         averageRating.textContent = `Average Rating: ${data.average_rating.toFixed(2)}`;
@@ -116,17 +114,16 @@ ratingMediaSection.style.cssText = `
 
         ratingInfo.appendChild(ratingBreakdown);
 
-    const mediaCarousel = document.createElement('div');
-    mediaCarousel.className = 'mediaCarousel';
-    mediaCarousel.style.cssText = `
-        flex: 2;
-        min-width: 300px;
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scrollbar-color: #007bff #f0f0f0;
-    `;
+        const mediaCarousel = document.createElement('div');
+        mediaCarousel.style.cssText = `
+            flex: 2;
+            min-width: 300px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #007bff #f0f0f0;
+        `;
 
         data.media_carrousel.forEach((url, index) => {
             const img = document.createElement('img');
@@ -318,67 +315,123 @@ ratingMediaSection.style.cssText = `
         });
     }
 
-function createStarRating(rating) {
-    const starsContainer = document.createElement('div');
-    starsContainer.className = 'stars-container';
-    starsContainer.style.cssText = `
-        display: inline-flex;
-        align-items: center;
-    `;
-
-    for (let i = 1; i <= 5; i++) {
-        const star = document.createElement('span');
-        star.innerHTML = i <= rating ? '★' : '☆';
-        star.style.cssText = `
-            color: ${i <= rating ? '#ffc107' : '#e0e0e0'};
-            font-size: 1.2rem;
-            transition: color 0.2s ease;
+  function createStarRating(rating) {
+        const starsContainer = document.createElement('div');
+        starsContainer.className = 'stars-container';
+        starsContainer.style.cssText = `
+            display: inline-flex;
+            align-items: center;
         `;
-        starsContainer.appendChild(star);
+
+        for (let i = 1; i <= 5; i++) {
+            const star = document.createElement('span');
+            star.innerHTML = i <= rating ? '★' : '☆';
+            star.style.cssText = `
+                color: ${i <= rating ? '#ffc107' : '#e0e0e0'};
+                font-size: 1.2rem;
+                transition: color 0.2s ease;
+            `;
+            starsContainer.appendChild(star);
+        }
+
+        return starsContainer;
     }
 
-    return starsContainer;
-}
-
     function createImageCarousel(images) {
-    const carouselContainer = document.createElement('div');
-    carouselContainer.className = 'image-carousel';
-    carouselContainer.style.cssText = `
-        width: 100%;
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-        margin-bottom: 1rem;
-    `;
-
-    images.forEach((url, index) => {
-        const img = document.createElement('img');
-        img.src = url;
-        img.alt = `Review image ${index + 1}`;
-        img.style.cssText = `
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            display: inline-block;
-            margin-right: 0.5rem;
+        const carouselContainer = document.createElement('div');
+        carouselContainer.className = 'image-carousel';
+        carouselContainer.style.cssText = `
+            position: relative;
+            width: 100%;
+            overflow: hidden;
             border-radius: 8px;
+            margin-bottom: 1rem;
         `;
-        carouselContainer.appendChild(img);
-    });
 
-    return carouselContainer;
-}
+        const imageContainer = document.createElement('div');
+        imageContainer.style.cssText = `
+            display: flex;
+            transition: transform 0.3s ease;
+        `;
+
+        images.forEach((url, index) => {
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = `Review image ${index + 1}`;
+            img.style.cssText = `
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                flex-shrink: 0;
+            `;
+            imageContainer.appendChild(img);
+        });
+
+        const prevButton = document.createElement('button');
+        prevButton.textContent = '❮';
+        prevButton.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 2;
+        `;
+
+        const nextButton = document.createElement('button');
+        nextButton.textContent = '❯';
+        nextButton.style.cssText = `
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 2;
+        `;
+
+        let currentIndex = 0;
+
+        prevButton.addEventListener('click', () => {
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : images.length - 1;
+            imageContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+        });
+
+        nextButton.addEventListener('click', () => {
+            currentIndex = (currentIndex < images.length - 1) ? currentIndex + 1 : 0;
+            imageContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+        });
+
+        carouselContainer.appendChild(imageContainer);
+        carouselContainer.appendChild(prevButton);
+        carouselContainer.appendChild(nextButton);
+
+        return carouselContainer;
+    }
   
-function createFilterControls(currentSort = 'newest', currentRating = 'all') {
-    const filterContainer = document.createElement('div');
-    filterContainer.className = 'filter-controls';
-    filterContainer.style.cssText = `
-        margin-bottom: 2rem;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        align-items: center;
-    `;
+    function createFilterControls(currentSort = 'newest', currentRating = 'all') {
+        const filterContainer = document.createElement('div');
+        filterContainer.className = 'filter-controls';
+        filterContainer.style.cssText = `
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        `;
 
         const sortSelect = document.createElement('select');
         sortSelect.id = 'sort-select';
@@ -491,13 +544,12 @@ const nextButton = createStyledButton('Next', () => fetchReviews(paginationData.
 reviewElement.style.cssText = `
     border: 1px solid #d0d0d0;
     border-radius: 12px;
-    padding: 1rem;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     transition: all 0.3s ease;
     background-color: #fff;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
 `;
     reviewElement.addEventListener('mouseenter', () => {
         reviewElement.style.transform = 'translateY(-5px)';
@@ -508,18 +560,15 @@ reviewElement.style.cssText = `
         reviewElement.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.05)';
     });
 
-const reviewHeader = document.createElement('div');
-reviewHeader.className = 'reviewHeader';
-reviewHeader.style.cssText = `
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-`;
+    const reviewHeader = document.createElement('div');
+    reviewHeader.style.cssText = `
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    `;
 
     const nameVerifiedContainer = document.createElement('div');
-    nameVerifiedContainer.className = 'nameVerifiedContainer';
     nameVerifiedContainer.style.cssText = `
         display: flex;
         flex-direction: column;
@@ -578,23 +627,23 @@ commentElement.style.cssText = `
 }
 
 
-function createReviewsGrid(reviews) {
-    const reviewsGrid = document.createElement('div');
-    reviewsGrid.className = 'reviews-grid';
-    reviewsGrid.style.cssText = `
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 2rem;
-        margin-top: 2rem;
-    `;
+    function createReviewsGrid(reviews) {
+        const reviewsGrid = document.createElement('div');
+        reviewsGrid.className = 'reviews-grid';
+        reviewsGrid.style.cssText = `
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        `;
 
-    reviews.forEach(review => {
-        const reviewElement = createReviewElement(review);
-        reviewsGrid.appendChild(reviewElement);
-    });
+        reviews.forEach(review => {
+            const reviewElement = createReviewElement(review);
+            reviewsGrid.appendChild(reviewElement);
+        });
 
-    return reviewsGrid;
-}
+        return reviewsGrid;
+    }
 
 function createIndividualReviews(reviews, paginationData, currentSort, currentRating) {
     console.log("Updating reviews with new data", reviews);
@@ -688,12 +737,10 @@ function addResponsiveStyles() {
                 padding: 0 1rem;
             }
             .reviews-summary, .individual-reviews {
-                padding: 1rem;
+                padding: 1.5rem;
             }
             .reviews-grid {
-                display: flex;
-                flex-direction: column;
-                gap: 1rem;
+                grid-template-columns: 1fr;
             }
             .filter-controls {
                 flex-direction: column;
@@ -702,44 +749,6 @@ function addResponsiveStyles() {
             .filter-controls select {
                 width: 100%;
                 margin-bottom: 1rem;
-            }
-            .ratingMediaSection {
-                flex-direction: column;
-            }
-            .ratingInfo, .mediaCarousel {
-                width: 100%;
-            }
-            .pagination-controls {
-                flex-direction: column;
-                align-items: center;
-            }
-            .pagination-controls button {
-                margin: 0.5rem 0;
-                width: 100%;
-            }
-            .review {
-                padding: 1rem;
-                width: 100%;
-            }
-            .reviewHeader {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .nameVerifiedContainer {
-                margin-bottom: 0.5rem;
-            }
-            .mediaCarousel {
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-            .mediaCarousel img {
-                width: 100px;
-                height: 100px;
-                display: inline-block;
-                margin-right: 0.5rem;
-            }
-            .stars-container {
-                margin-top: 0.5rem;
             }
         }
     `;
