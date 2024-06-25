@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
         background-color: #f8f9fa;
         border-radius: 16px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-left: -33.333%;
+        margin-right: -33.333%;
     `;
 
     const productSection = document.querySelector('.product-section, .product, #product-area, #shopify-section-product-template');
@@ -139,6 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 display: inline-block;
                 cursor: pointer;
                 transition: transform 0.3s ease;
+                margin-top: 3rem;
             `;
             img.addEventListener('click', function() {
                 openModal(index);
