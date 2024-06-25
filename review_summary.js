@@ -705,7 +705,7 @@ function fetchReviews(page, sort = currentSort, rating = currentRating) {
     currentSort = sort;
     currentRating = rating;
 
-    const url = new URL(`https://apiv2.whatacart.ai/v1/stores/${window.PLATFORM_ID}/pub/reviews/8035422863590/all`);
+    const url = new URL(`https://apiv2.whatacart.ai/v1/stores/${window.PLATFORM_ID}/pub/reviews/${product.id}/all`);
     url.searchParams.append('page', page);
     url.searchParams.append('per_page', itemsPerPage);
     url.searchParams.append('sort', sort === 'newest' ? 'newest' : 'oldest'); // Change 'sort' to 'order'
@@ -726,7 +726,7 @@ function fetchReviews(page, sort = currentSort, rating = currentRating) {
             .catch(error => console.error('Error fetching reviews:', error));
     }
 
-    fetch(`https://apiv2.whatacart.ai/v1/stores/${window.PLATFORM_ID}/pub/reviews/8035422863590/summary`)
+    fetch(`https://apiv2.whatacart.ai/v1/stores/${window.PLATFORM_ID}/pub/reviews/${product.id}/summary`)
         .then(response => response.json())
         .then(data => createReviewsSummary(data))
         .then(() => fetchReviews(1, 'newest', 'all'))
