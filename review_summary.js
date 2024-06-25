@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
         container.appendChild(ratingMediaSection);
 
         const poweredBy = document.createElement('div');
-        poweredBy.textContent = 'Powered by wappos';
+        poweredBy.innerHTML = '<a href="https://whatacart.ai" target="_blank" style="text-decoration: none; color: #6c757d;">Reviews in WhatsApp by whatacart.ai</a>';
         poweredBy.style.cssText = `
             position: absolute;
             bottom: 15px;
@@ -170,6 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
             font-weight: 500;
         `;
         container.appendChild(poweredBy);
+
 
         reviewsContainer.appendChild(container);
 
@@ -586,8 +587,13 @@ reviewElement.style.cssText = `
     `;
     nameVerifiedContainer.appendChild(nameElement);
 
+    const verifiedBadgeLink = document.createElement('a');
+    verifiedBadgeLink.href = 'https://whatacart.ai'; // Replace with your URL
+    verifiedBadgeLink.target = '_blank'; // Optional: opens the link in a new tab
+    verifiedBadgeLink.style.textDecoration = 'none'; // Remove underline
+    
     const verifiedBadge = document.createElement('span');
-    verifiedBadge.textContent = 'Verificado por Wappos';
+    verifiedBadge.textContent = 'Verificado por WhataCart.ai';
     verifiedBadge.style.cssText = `
         background-color: #28a745;
         color: white;
@@ -595,7 +601,10 @@ reviewElement.style.cssText = `
         padding: 2px 5px;
         border-radius: 3px;
     `;
-    nameVerifiedContainer.appendChild(verifiedBadge);
+    
+    verifiedBadgeLink.appendChild(verifiedBadge);
+    nameVerifiedContainer.appendChild(verifiedBadgeLink);
+
 
     const ratingElement = createStarRating(review.rate);
 
