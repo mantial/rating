@@ -10,11 +10,7 @@
         background-color: #f8f9fa;
         border-radius: 16px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        margin-left: -33.333%;
-        margin-right: -33.333%;
     `;
-    var productId = {{ product.id }};
-    console.log('The value is ', productId);
 
     const productSection = document.querySelector('.product-section, .product, #product-area, #shopify-section-product-template');
     if (productSection) {
@@ -718,7 +714,7 @@ function fetchReviews(page, sort = currentSort, rating = currentRating) {
 
 
 
-    const url = new URL(`https://apiv2.whatacart.ai/v1/stores/${window.WHATACART_PLATFORM_ID}/pub/reviews/${productId}/all`);
+    const url = new URL(`https://apiv2.whatacart.ai/v1/stores/${window.WHATACART_PLATFORM_ID}/pub/reviews/${window.productId}/all`);
     url.searchParams.append('page', page);
     url.searchParams.append('per_page', itemsPerPage);
     url.searchParams.append('sort', sort === 'newest' ? 'newest' : 'oldest'); // Change 'sort' to 'order'
@@ -741,7 +737,7 @@ function fetchReviews(page, sort = currentSort, rating = currentRating) {
   
 
 
-    fetch(`https://apiv2.whatacart.ai/v1/stores/${window.WHATACART_PLATFORM_ID}/pub/reviews/${productId}/summary`)
+    fetch(`https://apiv2.whatacart.ai/v1/stores/${window.WHATACART_PLATFORM_ID}/pub/reviews/${window.productId}/summary`)
         .then(response => response.json())
         .then(data => createReviewsSummary(data))
         .then(() => fetchReviews(1, 'newest', 'all'))
