@@ -469,6 +469,28 @@ document.addEventListener('DOMContentLoaded', function() {
         return filterContainer;
     }
 
+function createStyledButton(text, onClick, disabled = false) {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.disabled = disabled;
+    button.style.cssText = `
+        padding: 0.5rem 1rem;
+        background-color: ${disabled ? '#a0a0a0' : '#007bff'};
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: ${disabled ? 'not-allowed' : 'pointer'};
+        transition: background-color 0.2s ease;
+        font-size: 1rem;
+    `;
+    if (!disabled) {
+        button.addEventListener('mouseover', () => button.style.backgroundColor = '#0056b3');
+        button.addEventListener('mouseout', () => button.style.backgroundColor = '#007bff');
+    }
+    button.addEventListener('click', onClick);
+    return button;
+}
+  
     function createPaginationControls(paginationData) {
         const paginationControls = document.createElement('div');
         paginationControls.className = 'pagination-controls';
@@ -479,17 +501,8 @@ document.addEventListener('DOMContentLoaded', function() {
             margin-top: 2rem;
         `;
 
-    const prevButton = document.createElement('button');
-    prevButton.textContent = 'Previous';
-    prevButton.className = 'pagination-btn';
-    prevButton.disabled = paginationData.page <= 1;
-    prevButton.addEventListener('click', () => fetchReviews(paginationData.page - 1));
-
-    const nextButton = document.createElement('button');
-    nextButton.textContent = 'Next';
-    nextButton.className = 'pagination-btn';
-    nextButton.disabled = paginationData.page >= paginationData.total_pages;
-    nextButton.addEventListener('click', () => fetchReviews(paginationData.page + 1));
+const prevButton = createStyledButton('Previous', () => fetchReviews(paginationData.page - 1), paginationData.page <= 1);
+const nextButton = createStyledButton('Next', () => fetchReviews(paginationData.page + 1), paginationData.page >= paginationData.total_pages);
 
         const pageInfo = document.createElement('span');
         pageInfo.className = 'pagination-info';
@@ -528,16 +541,16 @@ document.addEventListener('DOMContentLoaded', function() {
  function createReviewElement(review) {
     const reviewElement = document.createElement('div');
     reviewElement.className = 'review';
-    reviewElement.style.cssText = `
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 2rem;
-        display: flex;
-        flex-direction: column;
-        transition: all 0.3s ease;
-        background-color: #fff;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    `;
+reviewElement.style.cssText = `
+    border: 1px solid #d0d0d0;
+    border-radius: 12px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+`;
     reviewElement.addEventListener('mouseenter', () => {
         reviewElement.style.transform = 'translateY(-5px)';
         reviewElement.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)';
@@ -558,12 +571,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const nameVerifiedContainer = document.createElement('div');
     nameVerifiedContainer.style.cssText = `
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        align-items: flex-start;
     `;
 
     const nameElement = document.createElement('strong');
     nameElement.textContent = review.name;
-    nameElement.style.fontSize = '1.1rem';
+    nameElement.style.cssText = `
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+    `;
     nameVerifiedContainer.appendChild(nameElement);
 
     const verifiedBadge = document.createElement('span');
@@ -571,10 +588,9 @@ document.addEventListener('DOMContentLoaded', function() {
     verifiedBadge.style.cssText = `
         background-color: #28a745;
         color: white;
-        font-size: 1rem;
+        font-size: 0.8rem;
         padding: 2px 5px;
         border-radius: 3px;
-        margin-left: 0.5rem;
     `;
     nameVerifiedContainer.appendChild(verifiedBadge);
 
@@ -586,10 +602,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const commentElement = document.createElement('p');
     commentElement.textContent = review.comment || '';
-    commentElement.style.cssText = `
-        flex-grow: 1;
-        margin-bottom: 1rem;
-    `;
+commentElement.style.cssText = `
+    flex-grow: 1;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    line-height: 1.6;
+`;
     reviewElement.appendChild(commentElement);
 
     if (review.media) {
@@ -711,27 +729,30 @@ function fetchReviews(page, sort = currentSort, rating = currentRating) {
         .then(() => fetchReviews(1, 'newest', 'all'))
         .catch(error => console.error('Error fetching reviews:', error));
 
-    function addResponsiveStyles() {
-        const style = document.createElement('style');
-        style.textContent = `
-            @media (max-width: 768px) {
-                .reviews-container {
-                    padding: 0 1rem;
-                }
-                .reviews-summary, .individual-reviews {
-                    padding: 1.5rem;
-                }
-                .filter-controls {
-                    flex-direction: column;
-                    align-items: stretch;
-                }
-                .filter-controls select {
-                    width: 100%;
-                }
+function addResponsiveStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        @media (max-width: 768px) {
+            .reviews-container {
+                padding: 0 1rem;
             }
-        `;
-        document.head.appendChild(style);
-    }
-
+            .reviews-summary, .individual-reviews {
+                padding: 1.5rem;
+            }
+            .reviews-grid {
+                grid-template-columns: 1fr;
+            }
+            .filter-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-controls select {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
     addResponsiveStyles();
 });
