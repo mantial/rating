@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function() {
     const reviewsContainer = document.createElement('div');
     reviewsContainer.className = 'reviews-container';
     reviewsContainer.style.cssText = `
@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
         margin-left: -33.333%;
         margin-right: -33.333%;
     `;
-
     var productId = {{ product.id }};
+    console.log('The value is ', productId);
 
     const productSection = document.querySelector('.product-section, .product, #product-area, #shopify-section-product-template');
     if (productSection) {
@@ -716,6 +716,8 @@ function fetchReviews(page, sort = currentSort, rating = currentRating) {
     currentSort = sort;
     currentRating = rating;
 
+
+
     const url = new URL(`https://apiv2.whatacart.ai/v1/stores/${window.WHATACART_PLATFORM_ID}/pub/reviews/${productId}/all`);
     url.searchParams.append('page', page);
     url.searchParams.append('per_page', itemsPerPage);
@@ -736,6 +738,7 @@ function fetchReviews(page, sort = currentSort, rating = currentRating) {
             })
             .catch(error => console.error('Error fetching reviews:', error));
     }
+  
 
 
     fetch(`https://apiv2.whatacart.ai/v1/stores/${window.WHATACART_PLATFORM_ID}/pub/reviews/${productId}/summary`)
