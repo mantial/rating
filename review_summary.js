@@ -1,4 +1,4 @@
-  document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     const reviewsContainer = document.createElement('div');
     reviewsContainer.className = 'reviews-container';
     reviewsContainer.style.cssText = `
@@ -41,12 +41,12 @@
         `;
 
         const summaryTitle = document.createElement('h2');
-        summaryTitle.textContent = 'Customer Reviews Summary';
+        summaryTitle.textContent = 'Resumen de reseñas de compradores';
         summaryTitle.style.cssText = `
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
-            color: #1a73e8;
+            color: #000000;
         `;
         container.appendChild(summaryTitle);
 
@@ -73,11 +73,11 @@
         `;
 
         const averageRating = document.createElement('h3');
-        averageRating.textContent = `Average Rating: ${data.average_rating.toFixed(2)}`;
+        averageRating.textContent = `Calificación Promedio: ${data.average_rating.toFixed(2)}`;
         averageRating.style.cssText = `
             font-size: 1.8rem;
             margin-bottom: 1rem;
-            color: #007bff;
+            color: #000000;
         `;
         ratingInfo.appendChild(averageRating);
 
@@ -158,7 +158,7 @@
         container.appendChild(ratingMediaSection);
 
         const poweredBy = document.createElement('div');
-        poweredBy.innerHTML = '<a href="https://whatacart.ai" target="_blank" style="text-decoration: none; color: #6c757d;">Reviews in WhatsApp by whatacart.ai</a>';
+        poweredBy.innerHTML = '<a href="https://whatacart.ai" target="_blank" style="text-decoration: none; color: #6c757d;">Reviews en WhatsApp by whatacart.ai</a>';
         poweredBy.style.cssText = `
             position: absolute;
             bottom: 15px;
@@ -438,19 +438,19 @@
         const sortSelect = document.createElement('select');
         sortSelect.id = 'sort-select';
         sortSelect.innerHTML = `
-            <option value="newest" ${currentSort === 'newest' ? 'selected' : ''}>Newest First</option>
-            <option value="oldest" ${currentSort === 'oldest' ? 'selected' : ''}>Oldest First</option>
+            <option value="newest" ${currentSort === 'newest' ? 'selected' : ''}>Más recientes</option>
+            <option value="oldest" ${currentSort === 'oldest' ? 'selected' : ''}>Menos recientes</option>
         `;
 
         const ratingSelect = document.createElement('select');
         ratingSelect.id = 'rating-select';
         ratingSelect.innerHTML = `
-            <option value="all" ${currentRating === 'all' ? 'selected' : ''}>All Ratings</option>
-            <option value="5" ${currentRating === '5' ? 'selected' : ''}>5 Stars</option>
-            <option value="4" ${currentRating === '4' ? 'selected' : ''}>4 Stars</option>
-            <option value="3" ${currentRating === '3' ? 'selected' : ''}>3 Stars</option>
-            <option value="2" ${currentRating === '2' ? 'selected' : ''}>2 Stars</option>
-            <option value="1" ${currentRating === '1' ? 'selected' : ''}>1 Star</option>
+            <option value="all" ${currentRating === 'all' ? 'selected' : ''}>Todas</option>
+            <option value="5" ${currentRating === '5' ? 'selected' : ''}>5 estrellas</option>
+            <option value="4" ${currentRating === '4' ? 'selected' : ''}>4 estrellas</option>
+            <option value="3" ${currentRating === '3' ? 'selected' : ''}>3 estrellas</option>
+            <option value="2" ${currentRating === '2' ? 'selected' : ''}>2 estrellas</option>
+            <option value="1" ${currentRating === '1' ? 'selected' : ''}>1 estrella</option>
         `;
 
         [sortSelect, ratingSelect].forEach(select => {
@@ -462,6 +462,8 @@
                 font-size: 1rem;
                 cursor: pointer;
                 transition: all 0.2s ease;
+                width: auto;
+                max-width: 250px;
             `;
         });
 
@@ -640,12 +642,12 @@ commentElement.style.cssText = `
 function createReviewsGrid(reviews) {
     const reviewsGrid = document.createElement('div');
     reviewsGrid.className = 'reviews-grid';
-    reviewsGrid.style.cssText = `
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 2rem;
-        margin-top: 2rem;
-    `;
+reviewsGrid.style.cssText = `
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-top: 2rem;
+`;
 
     reviews.forEach(review => {
         const reviewElement = createReviewElement(review);
