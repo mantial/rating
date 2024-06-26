@@ -505,12 +505,12 @@ function createStyledButton(text, onClick, disabled = false) {
             margin-top: 2rem;
         `;
 
-const prevButton = createStyledButton('Previous', () => fetchReviews(paginationData.page - 1), paginationData.page <= 1);
-const nextButton = createStyledButton('Next', () => fetchReviews(paginationData.page + 1), paginationData.page >= paginationData.total_pages);
+const prevButton = createStyledButton('Anterior', () => fetchReviews(paginationData.page - 1), paginationData.page <= 1);
+const nextButton = createStyledButton('Siguiente', () => fetchReviews(paginationData.page + 1), paginationData.page >= paginationData.total_pages);
 
         const pageInfo = document.createElement('span');
         pageInfo.className = 'pagination-info';
-        pageInfo.textContent = `Page ${paginationData.page} of ${paginationData.total_pages}`;
+        pageInfo.textContent = `Página ${paginationData.page} de ${paginationData.total_pages}`;
         pageInfo.style.margin = '0 1rem';
 
         [prevButton, nextButton].forEach(button => {
