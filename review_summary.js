@@ -125,36 +125,43 @@
             scrollbar-color: #007bff #f0f0f0;
         `;
 
-        data.media_carrousel.forEach((url, index) => {
-            const img = document.createElement('img');
-            img.src = url;
-            img.alt = 'Review image';
-            img.dataset.index = index;
-            img.style.cssText = `
-                width: 150px;
-                height: 150px;
-                object-fit: cover;
-                margin-right: 1rem;
-                border-radius: 8px;
-                display: inline-block;
-                cursor: pointer;
-                transition: transform 0.3s ease;
-                margin-top: 3rem;
-            `;
-            img.addEventListener('click', function() {
-                openModal(index);
-            });
-            img.addEventListener('mouseover', function() {
-                this.style.transform = 'scale(1.05)';
-            });
-            img.addEventListener('mouseout', function() {
-                this.style.transform = 'scale(1)';
-            });
-            mediaCarousel.appendChild(img);
+// Filter out empty strings from media_carrousel
+const validMediaUrls = data.media_carrousel.filter(url => url.trim() !== '');
+
+// Check if validMediaUrls is empty
+if (validMediaUrls.length > 0) {
+    validMediaUrls.forEach((url, index) => {
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = 'Review image';
+        img.dataset.index = index;
+        img.style.cssText = `
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin-right: 1rem;
+            border-radius: 8px;
+            display: inline-block;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            margin-top: 3rem;
+        `;
+        img.addEventListener('click', function() {
+            openModal(index);
         });
+        img.addEventListener('mouseover', function() {
+            this.style.transform = 'scale(1.05)';
+        });
+        img.addEventListener('mouseout', function() {
+            this.style.transform = 'scale(1)';
+        });
+        mediaCarousel.appendChild(img);
+    });
+    ratingMediaSection.appendChild(mediaCarousel); // Append only if there are valid images
+}
+
 
         ratingMediaSection.appendChild(ratingInfo);
-        ratingMediaSection.appendChild(mediaCarousel);
         container.appendChild(ratingMediaSection);
 
         const poweredBy = document.createElement('div');
