@@ -1,4 +1,4 @@
-    document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function() {
     const reviewsContainer = document.createElement('div');
     reviewsContainer.className = 'reviews-container';
     reviewsContainer.style.cssText = `
@@ -12,11 +12,17 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     `;
 
-    const productSection = document.querySelector('.product-section, .product, #product-area, #shopify-section-product-template');
-    if (productSection) {
-        productSection.appendChild(reviewsContainer);
+    const mainContent = document.querySelector('.main-content'); // Adjust this selector as needed
+    if (mainContent) {
+        mainContent.appendChild(reviewsContainer);
     } else {
-        document.body.appendChild(reviewsContainer);
+        // Fallback if main content isn't found
+        const productSection = document.querySelector('.product-section, .product, #product-area, #shopify-section-product-template');
+        if (productSection) {
+            productSection.parentNode.insertBefore(reviewsContainer, productSection.nextSibling);
+        } else {
+            document.body.appendChild(reviewsContainer);
+        }
     }
 
     let currentPage = 1;
