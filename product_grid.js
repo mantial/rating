@@ -80,7 +80,7 @@ function renderStars(container, rating, rCount) {
         const productId = card.getAttribute('data-product-id');
         if (!processedProductIds.has(productId)) {
             console.log('Fetching rating for product ID:', productId);
-            createRatingWidget(productId, `https://apiv2.whatacart.ai/v1/stores/${window.WHATACART_PLATFORM_ID}/pub/reviews/${productId}/summary`);
+            createRatingWidget(productId, `https://apiv2.whatacart.ai/v1/stores/${window.BURBUXA_PLATFORM_ID}/pub/reviews/${productId}/summary`);
             processedProductIds.add(productId);
         }
     });
