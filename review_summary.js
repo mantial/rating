@@ -171,7 +171,7 @@ if (validMediaUrls.length > 0) {
         container.appendChild(ratingMediaSection);
 
         const poweredBy = document.createElement('div');
-        poweredBy.innerHTML = '<a href="https://whatacart.ai" target="_blank" style="text-decoration: none; color: #6c757d;">Reviews en WhatsApp by whatacart.ai</a>';
+        poweredBy.innerHTML = '<a href="https://burbuxa.com" target="_blank" style="text-decoration: none; color: #6c757d;">Reviews en WhatsApp by burbuxa.com</a>';
         poweredBy.style.cssText = `
             position: absolute;
             bottom: 15px;
@@ -601,12 +601,12 @@ reviewElement.style.cssText = `
     nameVerifiedContainer.appendChild(nameElement);
 
     const verifiedBadgeLink = document.createElement('a');
-    verifiedBadgeLink.href = 'https://whatacart.ai'; // Replace with your URL
+    verifiedBadgeLink.href = 'https://burbuxa.com'; // Replace with your URL
     verifiedBadgeLink.target = '_blank'; // Optional: opens the link in a new tab
     verifiedBadgeLink.style.textDecoration = 'none'; // Remove underline
     
     const verifiedBadge = document.createElement('span');
-    verifiedBadge.textContent = 'Verificado por WhataCart.ai';
+    verifiedBadge.textContent = 'Verificado por burbuxa.com';
     verifiedBadge.style.cssText = `
         background-color: #28a745;
         color: white;
@@ -729,7 +729,7 @@ function fetchReviews(page, sort = currentSort, rating = currentRating) {
 
 
 
-    const url = new URL(`https://apiv2.whatacart.ai/v1/stores/${window.WHATACART_PLATFORM_ID}/pub/reviews/${window.productId}/all`);
+    const url = new URL(`https://apiv2.whatacart.ai/v1/stores/${window.BURBUXA_PLATFORM_ID}/pub/reviews/${window.productId}/all`);
     url.searchParams.append('page', page);
     url.searchParams.append('per_page', itemsPerPage);
     url.searchParams.append('sort', sort === 'newest' ? 'newest' : 'oldest'); // Change 'sort' to 'order'
@@ -752,7 +752,7 @@ function fetchReviews(page, sort = currentSort, rating = currentRating) {
   
 
 
-    fetch(`https://apiv2.whatacart.ai/v1/stores/${window.WHATACART_PLATFORM_ID}/pub/reviews/${window.productId}/summary`)
+    fetch(`https://apiv2.whatacart.ai/v1/stores/${window.BURBUXA_PLATFORM_ID}/pub/reviews/${window.productId}/summary`)
         .then(response => response.json())
         .then(data => createReviewsSummary(data))
         .then(() => fetchReviews(1, 'newest', 'all'))
