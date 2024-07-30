@@ -1,4 +1,3 @@
-
 (function () {
     function createRatingWidget(productId, apiUrl) {
         const productCard = document.querySelector(`[data-product-id="${productId}"]`);
