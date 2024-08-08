@@ -1,9 +1,10 @@
-      document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
     const reviewsContainer = document.createElement('div');
     reviewsContainer.className = 'reviews-container';
     reviewsContainer.style.cssText = `
         max-width: 1200px;
         margin: 2rem auto;
+        margin-top: 4rem;
         padding: 0 2rem;
         font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         color: #333;
@@ -11,19 +12,27 @@
         border-radius: 16px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     `;
-
+    const BurbuxaReviews = document.querySelector('burbuxa-reviews, .burbuxa-reviews, #burbuxa-reviews');
+    console.log("Burbuxa reviews is", BurbuxaReviews)
+    const productSection = document.querySelector('.product-section, .product, #product-area, #shopify-section-product-template');
+    console.log("Product section is", productSection)
     const mainContent = document.querySelector('.main-content'); // Adjust this selector as needed
-    if (mainContent) {
-        mainContent.appendChild(reviewsContainer);
+    console.log("Main content is", mainContent)
+    if (BurbuxaReviews) {
+        BurbuxaReviews.appendChild(reviewsContainer);
     } else {
-        // Fallback if main content isn't found
-        const productSection = document.querySelector('.product-section, .product, #product-area, #shopify-section-product-template');
-        if (productSection) {
-            productSection.parentNode.insertBefore(reviewsContainer, productSection.nextSibling);
+        if (mainContent) {
+            mainContent.appendChild(reviewsContainer);
         } else {
-            document.body.appendChild(reviewsContainer);
+            // Fallback if main content isn't found
+            if (productSection) {
+                productSection.parentNode.insertBefore(reviewsContainer, productSection.nextSibling);
+            } else {
+                document.body.appendChild(reviewsContainer);
+            }
         }
     }
+
 
     let currentPage = 1;
     const itemsPerPage = 6;
