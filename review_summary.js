@@ -531,7 +531,7 @@ const prevButton = createStyledButton('Anterior', () => fetchReviews(paginationD
 const nextButton = createStyledButton('Siguiente', () => fetchReviews(paginationData.page + 1), paginationData.page >= paginationData.total_pages);
 
         const pageInfo = document.createElement('span');
-        let totalPages = paginationData.total_pages > 0 ? paginationData.total_pages : 1;
+        let totalPages = Number.isInteger(paginationData.total_pages) && paginationData.total_pages >= 1 ? paginationData.total_pages : 1;
         pageInfo.className = 'pagination-info';
         pageInfo.textContent = `Página ${paginationData.page} de ${totalPages}`;
         pageInfo.style.margin = '0 1rem';
