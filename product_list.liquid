@@ -1,25 +1,38 @@
 <style>
-    .whata-star-filled {
-        background: url('https://embed-whatacart.sfo3.cdn.digitaloceanspaces.com/star.svg') center center no-repeat no-repeat;
-        width: 20px;
-        height: 20px;
-        background-size: 20px 20px; 
-        display: inline-block !important;
-    }
-    .whata-star-container {display: flex; flex-direction: row; gap: 5px; align-items: center; }
-    .whata-star-empty {
-        background: url('https://embed-whatacart.sfo3.cdn.digitaloceanspaces.com/star.svg');
-        width: 20px;
-        height: 20px;
-        background-size: 20px 20px; 
-        filter: grayscale(100%);
-        display: inline-block !important;
-    }
-</style>
-<script>
-window.WHATA_PLATFORM_ID = '<PLATFORM_ID>';
-(function () {
+.whata-star {
+    position: relative;
+    display: inline-block;
+    font-size: 20px; /* Adjust as needed */
+    line-height: 1;
+}
 
+.whata-star-filled {
+    color: gold; /* Or any color you prefer for filled stars */
+}
+
+.whata-star-empty {
+    color: #ccc; /* Or any color you prefer for empty stars */
+}
+
+.whata-star-partial {
+    color: gold; /* Same as filled star color */
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.whata-star-container {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+}
+</style>
+
+<script>
+window.WHATA_PLATFORM_ID = '51253837997';
+
+(function () {
     function createRatingWidget(containerId, apiUrl) {
         const ratingWidget = document.getElementById(containerId);
 
@@ -38,22 +51,49 @@ window.WHATA_PLATFORM_ID = '<PLATFORM_ID>';
 
         function renderStars(rating, rCount) {
             ratingWidget.innerHTML = '';
+
+            const fullStars = Math.floor(rating);
+            const decimalPart = rating - fullStars;
+
             for (let i = 1; i <= 5; i++) {
-                const star = document.createElement('div');
-                star.classList.add('whata-star-'+ ((i <= rating) ? 'filled' : 'empty'));
+                const star = document.createElement('span');
+                star.className = 'whata-star';
+
+                if (i <= fullStars) {
+                    star.innerHTML = '★';
+                    star.classList.add('whata-star-filled');
+                } else if (i === fullStars + 1 && decimalPart > 0) {
+                    const partialStar = document.createElement('span');
+                    partialStar.className = 'whata-star-partial';
+                    partialStar.innerHTML = '★';
+                    partialStar.style.width = `${decimalPart * 100}%`;
+
+                    const emptyStar = document.createElement('span');
+                    emptyStar.className = 'whata-star-empty';
+                    emptyStar.innerHTML = '☆';
+
+                    star.appendChild(partialStar);
+                    star.appendChild(emptyStar);
+                } else {
+                    star.innerHTML = '☆';
+                    star.classList.add('whata-star-empty');
+                }
+
                 ratingWidget.appendChild(star);
             }
-            const count = document.createElement('div');
-            count.style.display = 'inline-block';
-            count.innerHTML = `(${rCount})`;
+
+            const count = document.createElement('span');
+            count.style.marginLeft = '5px';
+            count.innerHTML = `${rating.toFixed(1)} (${rCount})`;
             ratingWidget.appendChild(count);
         }
 
         fetchRating();
     }
+
     const uid = `whata-star-${new Date().getTime()}`;
 
     document.write(`<div id="${uid}" class="whata-star-container"></div>`);
     createRatingWidget(uid, 'https://apiv2.whatacart.ai/v1/stores/' + window.WHATA_PLATFORM_ID + '/pub/reviews/{{  card_product.id }}');
 })();
-  </script>
+</script>
