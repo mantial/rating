@@ -111,7 +111,6 @@
     }
 
     function initializeRatingWidget(retryCount = 0) {
-
         const productId = `{{ card_product.id }}`;
         const uid = `whata-star-${productId}`;
         console.log(`Generated UID: ${uid}`);
@@ -126,7 +125,7 @@
         if (productTitle && productTitle.parentElement) {
             productTitle.parentElement.appendChild(container, productTitle);
             createRatingWidget(uid, `https://apiv2.whatacart.ai/v1/stores/${window.BURBUXA_PLATFORM_ID}/pub/reviews/${productId}`, productId, sectionId);
-            
+
             // Check if the container is empty after a short delay
             setTimeout(() => {
                 if (container.innerHTML.trim() === '') {
@@ -140,23 +139,15 @@
             }, 500); // Check after 500ms to allow for initial rendering
         } else {
             console.warn(`Product title not found for Product ID: ${productId}`);
+            if (retryCount < 5) {
+                console.log(`Retrying... (${retryCount + 1}/5)`);
+                setTimeout(() => initializeRatingWidget(retryCount + 1), 1000);
+            } else {
+                console.warn(`Max retries reached for Product ID: ${productId}`);
+            }
         }
     }
 
-    // Create a MutationObserver to watch for changes in the DOM
-    const observer = new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-            if (mutation.type === 'childList') {
-                const productTitle = document.querySelector(`#CardLink-{{ section_id }}-{{ card_product.id }}`);
-                if (productTitle) {
-                    observer.disconnect();
-                    initializeRatingWidget();
-                    break;
-                }
-            }
-        }
-    });
-
-    // Start observing the document body for changes
-    observer.observe(document.body, { childList: true, subtree: true });
+    // Directly initialize the widget without using an observer
+    initializeRatingWidget();
 })();
