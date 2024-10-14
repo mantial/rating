@@ -339,25 +339,71 @@ if (validMediaUrls.length > 0) {
         });
     }
 
-  function createStarRating(rating) {
+    function createStarRating(rating) {
         const starsContainer = document.createElement('div');
         starsContainer.className = 'stars-container';
         starsContainer.style.cssText = `
             display: inline-flex;
             align-items: center;
         `;
-
-        for (let i = 1; i <= 5; i++) {
+        
+        const fullStars = Math.floor(rating);
+        const decimalPart = rating - fullStars;
+        const hasPartialStar = decimalPart > 0;
+        const totalStars = 5;
+    
+        // Create full stars
+        for (let i = 0; i < fullStars; i++) {
             const star = document.createElement('span');
-            star.innerHTML = i <= rating ? '★' : '☆';
+            star.innerHTML = '★';
             star.style.cssText = `
-                color: ${i <= rating ? '#ffc107' : '#e0e0e0'};
+                color: #ffc107;
                 font-size: 1.2rem;
-                transition: color 0.2s ease;
+                margin-right: 0.1rem;
             `;
             starsContainer.appendChild(star);
         }
-
+    
+        // Create partial star if needed
+        if (hasPartialStar) {
+            const star = document.createElement('span');
+            star.style.cssText = `
+                position: relative;
+                display: inline-block;
+                color: #e0e0e0;
+                font-size: 1.2rem;
+                margin-right: 0.1rem;
+            `;
+            star.innerHTML = '★';
+    
+            const partialStar = document.createElement('span');
+            partialStar.innerHTML = '★';
+            partialStar.style.cssText = `
+                color: #ffc107;
+                position: absolute;
+                top: 0;
+                left: 0;
+                overflow: hidden;
+                width: ${decimalPart * 100}%;
+            `;
+    
+            star.appendChild(partialStar);
+            starsContainer.appendChild(star);
+        }
+    
+        // Create empty stars
+        const emptyStars = totalStars - fullStars - (hasPartialStar ? 1 : 0);
+        for (let i = 0; i < emptyStars; i++) {
+            const star = document.createElement('span');
+            star.innerHTML = '★';
+            star.style.cssText = `
+                color: #e0e0e0;
+                font-size: 1.2rem;
+                margin-right: 0.1rem;
+            `;
+            starsContainer.appendChild(star);
+        }
+    
         return starsContainer;
     }
 
@@ -732,6 +778,15 @@ function addFilterListeners() {
 }
 
 
+function renderStarRatingOnly(data) {
+    const ratingContainer = document.querySelector('.burbuxa-title-stars');
+    if (ratingContainer) {
+        const averageRating = data.average_rating;
+        const starsElement = createStarRating(averageRating);
+        ratingContainer.appendChild(starsElement);
+    }
+}
+
 function fetchReviews(page, sort = currentSort, rating = currentRating) {
     currentPage = page;
     currentSort = sort;
@@ -764,7 +819,10 @@ function fetchReviews(page, sort = currentSort, rating = currentRating) {
 
     fetch(`https://apiv2.whatacart.ai/v1/stores/${window.BURBUXA_PLATFORM_ID}/pub/reviews/${window.productId}/summary`)
         .then(response => response.json())
-        .then(data => createReviewsSummary(data))
+        .then(data => {
+            createReviewsSummary(data);
+            renderStarRatingOnly(data);
+        })
         .then(() => fetchReviews(1, 'newest', 'all'))
         .catch(error => console.error('Error fetching reviews:', error));
 
